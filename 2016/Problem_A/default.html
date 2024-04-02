@@ -1,0 +1,643 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css"><!--
+  .s1 { font-family: sans-serif; font-weight: normal; font-size: 8pt; }
+ .s2 { font-family: sans-serif; font-weight: normal; font-size: 14pt; }
+ .s3 { font-family: sans-serif; font-weight: normal; font-size: 12pt; }
+ .p, p { font-family: serif; font-weight: normal; font-size: 14.5pt; }
+ .s4, li { font-family: serif; font-weight: normal; font-size: 13.5pt; }
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	line-height: 100%;
+}
+.auto-style4 {
+	line-height: 100%;
+}
+.auto-style5 {
+	text-align: center;
+}
+div.figure {
+    width="360px";
+    text-align:center;
+    margin:auto;
+}
+p.caption {
+    margin:auto;
+    display:block;
+    font:italic 12px Georgia, "Times New Roman", Times, serif;
+    color:#333333;
+}
+
+
+  -->
+</style>
+<link href="./Untitled_12.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+window.MathJax = {
+ jax: ["input/TeX","output/HTML-CSS"],
+ extensions: ["tex2jax.js"],
+ tex2jax: {
+  inlineMath: [['$$','$$'],['\\(','\\)']]
+ },
+};
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div>
+<h1 class="auto-style1">ICCAD 2016 Contest </h1>
+<h2 class="auto-style1">Identical Fault Search</h2>
+<h3 class="auto-style1">Tangent Wei and Luke Lin<i> , Synopsys Taiwan Co., Ltd., 
+Taiwan</i></h3>
+<hr>
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">0. Announcements</h2>
+<p class="auto-style2">
+<ul>
+	<b> Things to be noted when you use read_spef() for incremental timing analysis: <a href="./Docs/incremental_timer_usage.txt">Click here</a></b> <br>
+	<b> TIP: internally increasing MAX_WIRE_SEGMENT_LENGTH (e.g., > 100um) can save memory usage and runtime, while little accuracy is harmed with the current wire model.</b>
+	<li> 11/19/2015: <b>Thank you for your participation in ICCAD Contest 2015. The <a href=#RESULTS>final slides and placements</a> are uploaded.</b>
+	<li> 09/09/2015: The teams must submit a brief abstract describing their methodology in solving the Problem C, along with the final binary. The abstract should be written in README.txt (or .pdf, .doc), and should not be longer than 2000 characters including spaces, containing a maximum of two figures. </font>
+	<li> 08/31/2015: We are now changing default MAX_WIRE_SEGMENT_LENGTH to 100um, to save memory usage, overall runtime, and disk space. Evaluation script tar ball now include the new ICCAD2015.parm. All default outputs are slightly changed. 
+	<li> 08/31/2015: <a href=#RESULTS>Best extra results</a> have been posted.
+	<li> 08/15/2015: Evaluation script updated (ver 1.2.2). No quality changes unless you modify FF-to-LCB association. See <a href=#DOWNLOAD>Download section</a> (<a href="./Docs/release_note.txt">Release Note</a>)
+	<li> 08/11/2015: superblue7 benchmark uploaded in in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 08/11/2015: Timer updated (ver 2.2.2). It does not change the default output on the released benchmarks. Please use the latest timer. The <a href="http://web.engr.illinois.edu/~thuang19/software/timer/OpenTimer.html">timer source codes</a> have been released. 
+	<li> 08/10/2015: <a href=#RESULTS>Best beta results</a> have been posted. Please re-send your binary if you want to get re-evaluation.
+	<li> 07/29/2015: superblue10 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 07/27/2015: superblue4 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 07/01/2015: Evaluation script/timer updated (ver 1.2.1). The default outputs changed a bit, too. See <a href=#DOWNLOAD>Download section</a> and <a href="./Docs/release_note.txt">Release Note</a>. Keep in mind that the new timer API - splice_driver - is NOT to be used for the incremental netlist modification.
+	<li> 06/27/2015: Evaluation script/timer updated (ver 1.2.0). 
+	<li> 06/27/2015: Please make sure to build a static binary that supports <b>GNU/Linux 2.6.18 or lower</b>. Otherwise, it crashes on the contest machine. Type in '<b>file &ltyour binary&gt</b>' and check the minimum kernel version that it supports. You need to rebuild and submit your alpha binary if it is higher than 2.6.18 (<a href="https://stackoverflow.com/questions/11206243/how-to-build-a-static-binary-for-gnu-linux-installations-with-old-kernel">HELP</a>, <a href=#SUBMISSION>contest machine spec.</a>)
+	<li> 06/11/2015: superblue16 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>. Also two max displacement limits posted per design. We test your placer twice per design, varying the limits.
+	<li> 06/08/2015: Evaluation script slightly updated (ver 1.1.2).
+	<li> 06/06/2015: superblue18 benchmark updated (one macro's dimension and placement modified)
+	<li> 06/03/2015: Evaluation scrip/timer updated (ver 1.1.1).
+	<li> 06/02/2015: Contest file format updated in <a href="#BENCHMARKS">Benchmarks section</a>. See the Sec 4. Updates. 
+	<li> 06/02/2015: superblue18 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>
+	<li> 06/02/2015: Evaluation script/timer updated (ver 1.1.0).
+	<li> 05/08/2015: Contest file format uploaded in Benchmarks section.
+	<li> 05/07/2015: <a href=#DOWNLOAD>Download section</a> created. Preliminary parser, spef writer, evaluation script (ver 1.0), and simple test case are uploaded.
+	<li> 04/08/2015: <a href=#TIMER>Timer section</a> created.
+	<li> 03/13/2015: <a href=#FAQ>FAQ section</a> is created. See how this year's contest differs from the <a href="http://cad_contest.ee.ncu.edu.tw/CAD-contest-at-ICCAD2014/problem_b/default.html">last year's</a>. 
+	<li> 03/01/2015: The System Specification details are now released in the main contest webpage.
+</ul></p>
+
+<hr>
+-->
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">1. Important Dates</h2>
+<p class="auto-style2">
+<ul>
+	<li>05/24/2015: Registration deadline
+	<li>06/24/2015: Alpha submission deadline : To pass the test, a binary must be executable on the contest machine and handle arguments properly. See <a href=#SUBMISSION>guidelines</a>.
+	<li>07/28/2015: Beta submission deadline : To pass the test, a binary must generate meaningful solutions on the released benchmarks.
+	<li>09/10/2015: Final submission deadline
+	<li>10/01/2015: Email notification to top three teams
+	<li>11/03/2015: Presentation at ICCAD 2015
+</ul></p>
+
+<hr>
+
+<hr>
+-->
+<a name="RESULTS">
+<h2 class="auto-style5">I. Abstract</h2>
+<p class="auto-style2">
+&nbsp;&nbsp;&nbsp;&nbsp;Injecting faults into designs is a way to qualify a verification environment. To improve the performance of a qualifying process, we need to remove identical faults. The problem will provide some faulty design cases; the contestants must identify all sets of identical faults. The judgment will be based on correctness, execution time and memory usage. The topic mainly belongs to gate level design.</p>
+<hr>
+
+<!----------------------------------------------------->
+<h2 class="auto-style5">II. Problem Description</h2>
+<p class="auto-style2">
+&nbsp;&nbsp;&nbsp;&nbsp;For a given design, called fault-free design, we can inject one or more faults into it, called faulty design. In this contest, we inject only one permanent fault into a fault-free design at a time. Normally, some output port values will be affected by an injected fault. If the verification environment can be aware of this output difference, it will be a good verification environment.
+</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;However, some injected faults will cause the same output difference. That is, no matter what the input port values are, the output differences caused by these faults are the same. Because the output values of the faulty designs with different faults are all identical whenever their inputs are the same, we call these faults identical faults and only one of them is instrumental in qualifying a verification environment. </p>
+<h3>&nbsp;&nbsp;&nbsp;&nbsp;Example:</h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;The design case is the CRC logic, <a href="./case/crc_v.rar">crc.v</a>, is adapt from the eth_crc module of the Ethernet MAC 10/100 Mbps design of the OpenCores website. We take the following statement of this design as example.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;$$assign\ next\_crc[1]= enable\land(data[1] \oplus data[0] \oplus curr\_crc[28] \oplus curr\_crc[29])$$</p>
+<div class="figure">
+<img class="caption" src="pba1.png" title="Fig.1" width="960px" height="360px" style="display:block; margin:auto;">
+<p class="caption"><font size="3">Fig.1</font></p>
+</div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;Assume we inject 2 faults. One is replacing the driver operator of signal 502 by NXOR as below, called Fault 1.</p>
+<div class="figure">
+<img class="caption" src="pba2.png" title="Fig.2" width="960px" height="360px" style="display:block; margin:auto;">
+<p class="caption"><font size="3">Fig.2</font></p>
+</div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;Another one is the replacing the driver operator of signal 503 by NXOR as below, called Fault 2.</p>
+<div class="figure">
+<img class="caption" src="pba3.png" title="Fig.3" width="960px" height="360px" style="display:block; margin:auto;">
+<p class="caption"><font size="3">Fig.3</font></p>
+</div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;The faulty design of Fault 1 and Fault 2 are the same with the following faulty design.</p>
+<div class="figure">
+<img class="caption" src="pba4.png" title="Fig.4" width="960px" height="360px" style="display:block; margin:auto;">
+<p class="caption"><font size="3">Fig.4</font></p>
+</div>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;Therefore, Fault 1 and Fault 2 are identical to each other so we call them identical faults in one identical fault group. </p>
+<h3>&nbsp;&nbsp;&nbsp;&nbsp;Program Requirements:</h3>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;The contestant’s program needs to load and parse the given gate-level design to get the design knowledge and then generate the faulty design for the selected fault in the fault description file. After found an identical fault group by the contestant’s algorithm, the contestant’s program also needs to verify each pair of faults which are found in one identical fault group being identical. Finally, output all found identical fault groups as the output format. </p>
+<h3>&nbsp;&nbsp;&nbsp;&nbsp;Input:</h3>
+	<ol type="circle">
+		<li><a href="./case/crc_isc.rar">A gate level design</a></li>
+		<li><a href="./case/fault_description.txt">A fault description file</a></li>
+	</ol>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;For the gate level design file, there are some comments, started by the ‘#’ for one line, in the beginning of this file. These comments give a brief description of this design. </p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;After these comments, the design is described by following 4 parts. Input ports, output ports, D-type flip-flops, called “DFF”, and then gates. To simplify the format, only “BUFF” and “NOT” has one operand and other gates <i><b>always</b></i> have 2 operands.</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;For each input port, we use “INPUT($signal_id)” to indicate it, where the “$signal_id” is the signal identifier of the input port. Every signal identifier is an integer. </p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;For each output port, we use “OUTPUT($signal_id)” to indicate it, where the “$signal_id” is the signal identifier of the output port. </p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;For each D-type flip-flop, we use “$signal_ id1 = DFF($clock, $reset, $enable, $signal_id2)” to indicate it, where the “$signal_id1” is the output signal identifier of this D-type flip-flop and the forth parameter, “$signal_id2”,  is the input signal identifier of this D-type flip-flop. The first one, “$clock”, is the clock signal of the DFF. The second one, “$reset”, is the reset signal of the DFF. The third one, “$enable”, is the enable signal of the DFF.</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;For each gate, we use following format for it. The “$signal_id1” is the output signal of the gate. The “$signal_id2” and “$signal_id3” are the inputs of the gate.</p>
+	<ul>
+		<li>$signal_id1 = BUFF($signal_id2)</li>
+		<li>$signal_id1 = NOT($signal_id2)</li>
+    	<li>$signal_id1 = AND($signal_id2, $signal_id3)</li>
+    	<li>$signal_id1 = NAND($signal_id2, $signal_id3)</li>
+    	<li>$signal_id1 = OR($signal_id2, $signal_id3)</li>
+		<li>$signal_id1 = NOR($signal_id2, $signal_id3)</li>
+		<li>$signal_id1 = XOR($signal_id2, $signal_id3)</li>
+    	<li>$signal_id1 = NXOR($signal_id2, $signal_id3)</li>
+	</ul>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;Take the above mentioned statement as example. Its related gate-level codes are as below: </p>
+	<p>
+		&nbsp;&nbsp;&nbsp;&nbsp;…<br> 
+		&nbsp;&nbsp;&nbsp;&nbsp;INPUT(100)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;INPUT(101)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;…<br> 
+		&nbsp;&nbsp;&nbsp;&nbsp;INPUT(105)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;…<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;INPUT(228)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;INPUT(229)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;…<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;OUTPUT(301)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;…<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;301 = AND(105, 504)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;…<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;502 = XOR(100, 101)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;503 = XOR(228, 229)<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;504 = XOR(502, 503)<br>  	
+	</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;For the fault description file, there are 3 columns in it as below.</p>
+	<p>
+		&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;SA0<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;SA1<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;NEG<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;101&nbsp;&nbsp;&nbsp;&nbsp;SA0<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;...
+	</p>
+	<p>
+		&nbsp;&nbsp;&nbsp;&nbsp;The first column is the fault identifier of this fault. <br>
+		&nbsp;&nbsp;&nbsp;&nbsp;The second column is which signal we inject this fault. <br>
+		&nbsp;&nbsp;&nbsp;&nbsp;The third column is the fault type of this fault.<br>
+	</p>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;In summary, we have 11 kinds of fault as the below table. We may not use all 11 kinds of faults on every signal.</p>
+	<table align="center" border="1">
+		<tr align="center">
+			<td><b>Name</b></td>
+			<td><b>Description</b></td>
+		</tr>
+		<tr>
+			<td>SA0</td>
+			<td>Stuck at 0</td>
+		</tr>
+		<tr>
+			<td>SA1</td>
+			<td>Stuck at 1</td>
+		</tr>
+		<tr>
+			<td>NEG</td>
+			<td>The negative value of the signal</td>
+		</tr>
+		<tr>
+			<td>RDOB_AND</td>
+			<td>Replace Driver Operator By AND</td>
+		</tr>
+		<tr>
+			<td>RDOB_NAND</td>
+			<td>Replace Driver Operator By NAND</td>
+		</tr>
+		<tr>
+			<td>RDOB_OR</td>
+			<td>Replace Driver Operator By OR</td>
+		</tr>
+		<tr>
+			<td>RDOB_NOR</td>
+			<td>Replace Driver Operator By NOR</td>
+		</tr>
+		<tr>
+			<td>RDOB_XOR</td>
+			<td>Replace Driver Operator By XOR</td>
+		</tr>
+		<tr>
+			<td>RDOB_NXOR</td>
+			<td>Replace Driver Operator By NXOR</td>
+		</tr>
+		<tr>
+			<td>RDOB_NOT</td>
+			<td>Replace Driver Operator By NOT<br> 
+				only when the driver operator is BUFF
+		</td>
+		</tr>
+		<tr>
+			<td>RDOB_BUFF</td>
+			<td>Replace Driver Operator By BUFF<br> 
+				only when the driver operator is NOT
+			</td>
+		</tr>
+	</table>
+	
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;We use line 16, 17, 18 and 19 of the fault description file in the hyperlink as examples to show how we inject one fault at a time into the design. 
+		As the line 16 of the fault description file, if we inject one Stuck At 0, called “SA0”, fault on signal 502, its faulty design is as below. 
+	</p>
+	<div class="figure">
+	<img class="caption" src="pba5.png" title="Fig.5" width="960px" height="360px" style="display:block; margin:auto;">
+	<p class="caption"><font size="3">Fig.5<br>The “stuck at 0” fault will force its signal always being 0.</font></p>
+	</div>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;As the line 17 of the fault description file, if we inject one Stuck At 1, called “SA1”, fault on signal 502, its faulty design is as below.</p>
+	<div class="figure">
+	<img class="caption" src="pba6.png" title="Fig.6" width="960px" height="360px" style="display:block; margin:auto;">
+	<p class="caption"><font size="3">Fig.6<br>The “stuck at 1” fault will force the value of its signal always being 1. </font></p>
+	</div>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;As the line 18 of the fault description file, if we inject one Negative, called “NEG”, fault on signal 502, its faulty design is as below.</p>
+	<div class="figure">
+	<img class="caption" src="pba7.png" title="Fig.7" width="960px" height="360px" style="display:block; margin:auto;">
+	<p class="caption"><font size="3">Fig.7<br>The “Negative” fault will force its signal value always being its negative one.</font></p>
+	</div>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;As the line 19 of the fault description file, if we inject one Replace Driver Operator By AND, called “RDOB_AND”, fault on signal 502, its faulty design is as below.</p>
+	<div class="figure">
+	<img class="caption" src="pba8.png" title="Fig.8" width="960px" height="360px" style="display:block; margin:auto;">
+	<p class="caption"><font size="3">Fig.8</font></p>
+	</div>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;The “Replace Driver Operator By” fault will replace the original driver operator of its signal by the given operator. In this case, the driver operator of 502, XOR, is replaced by the given operator, AND. </p>
+<h3 class="auto-style4">&nbsp;&nbsp;&nbsp;&nbsp;Outputs:</h3>
+<ul type="square">
+<li>All id pairs of the identical faults.</li>
+</ul>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;The identical faults are put into fault groups and each id pairs should be printed out in lexicographical order, the left one is the smaller one. For example, if {1,4,9} and {6,10} are two groups of identical faults, then the id pairs of the identical faults should be printed out as follows:<br>
+</p>
+<ul class="auto-style6">
+    1 4<br>
+    1 9<br>
+    6 10<br>
+</ul>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; where the two id’s of a pair are separated by a space character. Please make sure your program follow this format.<br>&nbsp;&nbsp;&nbsp;&nbsp;The output text file should be named “identical_fault_pairs.txt”.<br>&nbsp;&nbsp;&nbsp;&nbsp;Due to the Contestant’s process may crash or cost too much time so that we have to kill it, we also strongly suggest that Contestant’s program should always flush its result into the output text file ASAP. Therefore, we can still get some results from the Contestant’s process even it was killed by us.</p>
+
+<h3 class="auto-style4">&nbsp;&nbsp;&nbsp;&nbsp;Scoring:</h3>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;The correctness of your result constitutes 60%, runtime constitutes 30% and memory usage constitutes10%.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each correct reported identical fault get 10 points. Any report identical fault, which is not a real identical fault, minuses 5 points. Any extra identical fault group will  minuses 5 points.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;For example,<br>
+&nbsp;&nbsp;Assume { 1,4,9 } and { 6,10 } are two groups of identical faults.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 4), (4,9), (6,10), it is also correct although it isn’t sorted. It gets 50 points<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 4), (6,10), (1, 9), it is also correct although it isn’t sorted. It gets 50 points<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 4), (6,10), it reports 4 correct identical faults.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It will get 40 points.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 4), (1, 9), it reports 3 correct identical faults.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It will get 30 points.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 4), (4,9), (6,10), (10, 13). The fault 13 is reported as an identical fault but it isn’t.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It will get 50 points and then minus 5 points for fault 13. Its final score is 45.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 4), (4,9), (10, 13). The fault 13 is reported as an identical fault but it isn’t.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In this case, even fault 10 belongs to the identical fault, the Contestant didn’t connect it to the correct fault.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Therefore, fault 10 cannot be a correct one in this case.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It will get 30 points from {1, 4, 9} and then minus 5 points for fault 13. No point for fault 10.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Its final score is 25.<br> 
+&nbsp;&nbsp;Assume we have a long identical fault group { 1, 2, 3, 4, 5, 6 }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 2), (1, 3), (1, 4), (1, 5) and (1, 6),  It gets 60 points.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 2), (1, 3), (4, 5), (4, 6), the one group is split into 2 groups, {1, 2, 3} and {4, 5, 6}.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It will get 60 points and then minus 5 points for the 1 extra group.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Its final score is 55.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If Contestant’s result is, (1, 2), (3, 4) and (5, 6), the one group is split into 3 groups, {1, 2}, {3, 4} and {5, 6}.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It will get 60 points and then minus 10 points for the 2 extra groups.<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Its final score is 50.<br>
+</p>
+<h3 class="auto-style4">&nbsp;&nbsp;&nbsp;&nbsp;Contest Objectives:</h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;Assume we inject N faults into the fault-free design, there will be N*(N-1)/2 fault pairs. Therefore, there are 2 main contest objects. The first one: How to divide the given design into several suitable partitions so that we can divide and conquer this problem. The second one: A high performance algorithm to verify some given faults being identical or not.</p>
+<h3 class="auto-style4">&nbsp;&nbsp;&nbsp;&nbsp;Problem Guidance:</h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;At the start, we suggest contestants write a gate-level design parser to get the fault-free design knowledge. Contestants also need to write a fault reader to get the faulty design knowledge from the currently selected fault and the fault-free design knowledge. Contestants are encouraged to find out the necessary design knowledge for a high performance algorithm to get all possible identical fault groups and another high performance algorithm to verify the just found possible identical fault groups. Finally, output the result as the output format. </p>
+<div class="figure">
+<img class="caption" src="pba9.png" title="Fig.9" width="960px" height="360px" style="display:block; margin:auto;">
+<p class="caption"><font size="3">Fig.9</font></p>
+</div>
+<hr>
+<h2 class="auto-style2", style="text-align:center">III. Test Case</h2>
+<p>
+	<ol>
+		<li>To simplify the verification process, please use the same execute file name, “IF_Searcher”, whose 1st argument is the gate level design file name and the 2nd argument is the fault description file name.</li>
+		<li>Sometimes, your program may crash or it costs too much time so that we have to kill your process. To prevent from getting empty output file, please always flush everything that your algorithm found. At the end, please sort your result as what’s we expected.</li>
+	</ol>
+	<ul>
+		<li><a href="./case/Case_01.tgz">case01</a></li>
+		<li><a href="./case/Case_02.tgz">case02</a></li>
+		<li><a href="./case/Case_03.tgz">case03</a></li>
+		<li><a href="./case/Case_04.tgz">case04</a></li>
+	</ul>
+</p>
+<hr>
+<h2 class="auto-stytle2", style="text-align:center"><span lang=EN-US style='font-family:"Times New Roman","serif";color:#336633'>IV. Reference</h2>
+	<p align="left">Survey of method:<br>
+		<ol>
+			<li><a href="https://www21.in.tum.de/~lammich/2015_SS_Seminar_SAT/resources/Equivalence_Checking_11_30_08.pdf">https://www21.in.tum.de/~lammich/2015_SS_Seminar_SAT/resources/Equivalence_Checking_11_30_08.pdf</a></li>
+			<li><a href="http://repository.cmu.edu/cgi/viewcontent.cgi?article=1148&context=compsci">http://repository.cmu.edu/cgi/viewcontent.cgi?article=1148&context=compsci</a></li>
+		</ol>
+	</p>
+	<p>
+		Use SAT:<br>
+		<ol>
+			<li><a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1382542">http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1382542</a></li>
+			<li><a href="http://fmv.jku.at/biere/talks/Biere-SAT05-talk.pdf">http://fmv.jku.at/biere/talks/Biere-SAT05-talk.pdf</a></li>
+		</ol>
+	</p>
+	<p>
+		Use BDD:<br>
+		<ol>
+			<li><a href="https://www.cs.ox.ac.uk/files/4309/97H1.pdf">https://www.cs.ox.ac.uk/files/4309/97H1.pdf</a></li>
+			<li><a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=628891">http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=628891</a></li>
+		</ol>
+	</p>
+	<p>
+		Use SAT and BDD:<br>
+		<ol>
+			<li><a href="https://www.research.ibm.com/haifa/projects/verification/SixthSense/papers/brn_iccd_00.pdf">https://www.research.ibm.com/haifa/projects/verification/SixthSense/papers/brn_iccd_00.pdf</a></li>
+			<li><a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1097859&tag=1">http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1097859&tag=1</a></li>
+		</ol>
+	</p>
+<hr>
+<h2 class="auto-stytle2", style="text-align:center"><span lang=EN-US style='font-family:"Times New Roman","serif";color:#336633'>V. Alpha Test</span></h2>
+<p align="center"><img src="alpha test.PNG"></p>
+<hr>
+<h2 class="auto-stytle2", style="text-align:center"><span lang=EN-US style='font-family:"Times New Roman","serif";color:#336633'>VI. Beta Test</span></h2>
+<p align="center"><img src="beta_a.PNG"></p>
+<hr>
+<h2 class="auto-stytle2", style="text-align:center"><span lang=EN-US style='font-family:"Times New Roman","serif";color:#336633'>VII. FAQ</span></h2>
+<ol class="auto-stytle3">
+<span lang="en-us" style="font-size:16.0pt;"style='gont-size:28.0pt'>
+<li>
+What do you expect from the participants’solutions?<br>
+<font color="red">The purpose of this problem is to figure out all identical fault groups in limited time. We like to know if contestants can a good solution to quickly group identical faults, especially, the faults can be injected in a large design with flip-flops. </font>
+</li>
+<li>
+Is it safe to assume that the different fault types (SA0,SA1,NEG) on the same net will never be equivalent?" More clearly, is a circuit possible that makes two different types of fault on a particular net, have an identical output response?<br>
+<font color="red">Due to the given gate-level design is NOT optimized, I cannot say that a circuit is <b><i>impossible</i></b> that makes <b><i>all kinds</i></b> of "<b><i>two different types</i></b>" of fault on a particular net, have an identical output response. Some pairs may be definitely NOT identical to each other but some don't.<br>
+For example,<br>
+701 = NOT(700)<br>
+702 = XOR(700, 701)&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;&nbsp;&nbsp;&nbsp;702 will be always 1'b1<br>
+ð  "SA0 fault on 702” == “NEG fault on 702” == “RDOP_NOXR fault on 702” =\= fault-free design.
+</font>
+</li>
+<!--
+<li>
+We are wondering why you proposed the Identical Fault Search as problem of the 2016 IC/CAD Contest. We cannot understand the goals as there are a lot of state-of-the-art approaches for this problem. What do you expect from the participants’ solutions?<br>
+<font color="red">The purpose of this problem is to figure out all identical fault groups in limited time. We like to know if contestants can a good solution to quickly group identical faults, especially, the faults can be injected in a large design with flip-flops.
+</li>
+-->
+</span>
+<li>
+I would like to know if there is a time limit to generate output for problem A?<br>
+<font color="red">The time limitation of each test case is 6 hours.</font>
+</li>
+<li>According to the problem A of the INPUT part: After these comments, the design is described by following 4 parts. Input ports, output ports, D-type flip-flops, called “DFF”, and then gates. To simplify the format, only “BUFF” and “NOT” has one operand and other gates ”<b>always</b>”  have 2 operands. I wonder what does this "always" mean. Does it mean "only" or "at least"?<br>
+	<font color="red">It means “only”.<br>
+	Other gates always have exactly 2 operands. They never have only one operand and never have more than 2 operands.</font>
+</li>
+<li>
+	I am going though the fault description file. Which has following format:<br>
+	(FAULT_ID&nbsp;&nbsp;&nbsp;&nbsp;NET_ID&nbsp;&nbsp;&nbsp;&nbsp;FAULT_TYPE)<br>
+	For net with multiple sinks, how should we consider the fault? Do we need to consider fault at "source pin" and each "sink pins".. or either of them?
+	For example:<br>
+	<img src="faq1.png"><br>
+	For above circuit at net (1)  ->  SA0 Fault How should we consider the SA) fault? At all the pins (source and sinks) or either one of them?<br>
+	<font color="red">For the SA0 of the signal 1, it will be as following picture:</font><br>
+	<img src="faq2.png">
+</li>
+<li>
+	I see a gate level design is a format with .isc file (crc.isc). But when I open it by notepad ++, I see it is a format with .bench file. I am not clear. Please explain it help me.<br>
+	<font color="red">The content of crc.isc file should be clear and easy to 
+	understand. If you have any questions for a specific description in the file, please feel free to let us know.</font>
+</li>
+<li>
+	In this file crc.isc, I see net 572 have two Outputs. It's mean the 527 net will be controlled with 2 drivers. I can't determine value logic.<br>
+	"....<br>
+	527 = XOR(230, 526)<br>
+	306 = XOR(403, 202)<br>
+	527 = XOR(103, 102)<br>
+	...."<br>
+	<font color="red">It is a bug. The attached one is the modified version. (We have replaced the file on 2016/03/25)</font>
+</li>
+<li>
+	What will be the initial state of DFF?<br>
+	<font color="red">The initial state of DFF is 0.</font>
+</li>
+<li>
+	Is parallel programming allowed?<br>
+	<font color="red">The contestant teams only need to submit their binary codes for evaluation. Please make sure that your binary code can be executed in the CIC machine. The detailed specification of the CIC machine will be announced soon. Moreover, we will create an CIC account for each contestant team in this May.</font>
+</li>
+<li>
+	what maximal size of circuit in testbenches?<br>
+	<font color="red">
+	(1) We have 4 lines of comments in the .isc file and these 4 line are about the size of the signals used in this design<br>
+    For example,<br> 
+    # 35 inputs  -- clock(1), reset(1), input_data(33)<br>
+    # 32 outputs -- output_signal(32)<br>
+    # 0 D-type flip-flops<br>
+    # 209 gates ( 21 BUFFs + 12 NOTs + 17 ANDs + 19 NANDs + 24 ORs + 26 NORs + 37 XORs + 53 NXORs )<br>
+	(2) There is no any obviously maximum used in the Problem A.<br>
+</font>
+</li>
+<li>
+	I am wondering if we need to consider the fault in a "sequential way" ? The released sample test case <i>design01.isc</i> mentions about Flip-Flop(FF) components. However, the total circuit never appears FF component. Do we need to consider FF behavior in the future?<br>
+	<font color="red">We will use the Flip-Flop(FF) component in later test cases.</font>
+</li>
+<li>
+	Is it mandatory to include verification step in the program? If it is, is there any method to distinguish between problem-solving step and verification step only with .exe file? (If not, in my opinion, verification step will not be well-implemented in the program for time efficiency.)<br>
+	<font color="red">No. We will check all your reported fault-pairs for the correctness.</font>
+</li>
+<li>
+	The output format you provided in website seems ambiguous. For example, if <font color="red">{ 1,4,9 }</font> and { 6,10 } are two groups of identical faults, than is following output still legal?<br>
+	1,4<br>
+	<font color="red">4,9</font><br>
+	6,10<br>
+	We think the red part of output might be the same meaning as the output on the website. Are we right?<br>
+	<font color="red">Yes. Due to we may kill the contestant's process if it costs too much time, we will not request contestant's result will be sorted or the result will be in particular pair order or the result contains particular pairs. For now, the only one format rule is that the left one is the smaller one of the every fault pair. You may re-check the final updated version of “Outputs:” and “Scoring:” parts.</font>
+</li>
+<li>
+	Clock signal seems useless in this contest, right? In other words, FFs output value will not be affected by the value of clock signal.<br>
+	<font color="red">The clock signal is useless in this contest. However, please assume the “clock” signal in the form of a square wave with a 50% duty cycle, with a fixed, constant frequency.</font>
+</li>
+<li>
+	The reset signal value of the FF is 1 → the output value of the FF is 0 ?
+	<font color="red">Yes.</font>
+</li>
+<li>
+	The reset signal value of the FF is 0 → the output value of the FF depends on the value of enable signal?<br>
+	<font color="red">Yes.</font>
+</li>
+<li>
+	The enable signal value of the FF is 1 → the output value of the FF is the same as the input value of the FF?<br>
+	<font color="red">Yes.</font>
+</li>
+<li>
+	The enable signal value of the FF is 0 → the output value of the FF keeps its original output value ?<br>
+	<font color="red">Yes.</font>
+</li>
+<li>
+	In problem 5 situation, how can we determine which value is the original output value of the FF?<br>
+	<font color="red">Please assume that there are some reset cycles before searching the Identical Faults. After these reset cycles, all output signals of DFFs are 0.</font>
+</li>
+<li>
+	Could you explain - is it possible to submit python script instead of binary executable for alpha submission. It was easier for us to make python prototype calling some binary files from within, instead of making everything on c++ from the very begining. README text file will be provided. Running the script will be easy, somewhat like:<br>
+	<img src="faq20.png"><br>
+	<font color="red">Please confirm your Python script can be executed in the CIC machine. Note that the Python script is allowed for Alpha Test Only. The Python script cannot be used for the final evaluation.</font>
+</li>
+<li>
+	Are the provided test cases comparable to the biggest cases in actual final test?<br>
+	<font color="red">The biggest final one is about 10X or more than the current attached cases.</font>
+</li>
+<li>
+	The identical faults are defined that no matter the input patterns are, the output differences are the same. How to judge the identical faults in sequential circuit? Can the different values captured by flip-flop (at PPO) means they are different?<br>
+	<font color="red">The values of primary outputs in 2 identical faults must be the same at every clock cycle. The test cases may have some gates among primary outputs and flip-flops.</font>
+</li>
+<li>
+	Can we submit the source code with other text file library, which can help to build the circuit?<br>
+	<font color="red">No. please make sure your submitted file is executable as the one in the “Program Requirements”.</font>
+</li>
+<li>
+	I found that the test case example,<br> 
+	<a href="http://cad-contest-2016.el.cycu.edu.tw/problem_A/case/crc_isc.rar">http://cad-contest-2016.el.cycu.edu.tw/problem_A/case/crc_isc.rar</a>,<br>
+  	and other test cases have some format differences, e.g.,<br>
+ 	 # 37 inputs -- data(4), enable(1), curr_crc(32)<br>
+ 	# 35 inputs -- clock(1), reset(1), input_data(33).<br>
+	Would the hidden cases use the format of the case example?<br>
+	<font color="red">Yes.</font>
+</li>
+<li>
+	Are the "reset", "enable" of DFF's inputs always the primary input of the circuit or they could be any output of a gate?<br>
+	<font color="red">
+		The Verilog code of the DFF is below:<br>
+		 For“signal_ id1 = DFF(clock, reset, enable, signal_id2)”,<br>
+		 Its Verilog code is as below:<br>
+		 always@(posedge clock or negedge reset)<br>
+		 if (!reset)  signal_ id1 <= 0;<br>
+		 else if (enable) signal_ id1 <= signal_id2;<br>
+	</font>
+</li>
+<li>
+	Will the gate level file always follows the order of INPUT, OUTPUT then DFF?<br>
+	<font color="red">Yes. However, the DFF does NOT always exist. Some Design doesn’t have any DFF as the case01 and case02 of the “III. TestCase”</font>
+</li>
+<li>
+	I wonder if that there will be RDOB fault for DFF for example:<br>
+ 	In .isc file : 4207 = DFF(0, 601, 1202, 5409)<br>
+	In fault file: 4207  RDOB_BUFF<br>
+	<font color="red">There is no such kind of fault. For DROB_BUFF, it is only occurs for BUFF.<br>
+	For example,<br>
+	In .isc file:    40003 = BUFF(50020)<br>
+	In fault file:  50020   RDOB_BUFF<br>
+	</font>
+</li>
+<li>
+	I was wondering how good the resulting scores are.  Any reference score, the highest one, for each test cases?<br>
+	<font color="red">The full marks of Case01 is 5810.<br>
+	The full marks of Case02 is 6730.<br>
+	The full marks of Case03 is 7720.<br>
+	</font>
+</li>
+<li>
+	According to the scoring : “Each correct reported identical fault get 10 points. Any report identical fault, which is not a real identical fault, minuses 5 points. Any extra identical fault group will minuses 5 points.” Based on the full marks for each test case, shall we have 581, 673 and 772 id pairs of the identical faults, respectively ? Would you give us the resulting for each test case?<br>
+	<font color="red">We do not announce the detailed results.</font>
+</li>
+<li>
+	We know that the runtime of our result constitutes 30% and memory usage constitutes10%. How can we calculate the score according to the runtime and the memory usage?<br>
+	<font color="red">We will according to the average and standard deviation of the execution time to give the score. For example, the average is 10 seconds and the standard deviation is 2. If the execute time is smaller (the average minus 2 * standard deviation), which is 10 – 2*2 = 6, it gets 100% scores. <br>
+						Between 2 and 1 standard deviation, which is between 6 and 8, it gets 80% scores.<br>
+						Between 1 and 0 standard deviation, which is between 8 and 10, it gets 60% scores.<br>
+						Between the average and ( the average plus 1 standard deviation), which is 10 and 12, it gets 40 % scores.<br>
+						Between plus 1 and  plus 2 standard deviations, which is between 12 and 14, it gets 20% scores.<br>
+						Over (the average plus 2 * standard deviation), which is bigger than 14 seconds, it gets 0% scores. The main point is that the score of execution time and memory usage is dependent on the average and standard deviation of them. The above numbers, 6, 8, 10, 12, 14, etc. are used for example.<br>
+	</font>
+</li>
+<li>
+	Can you provide the evaluation result of Beta test that the score is calculated by all grading standards - the correctness, runtime and memory usage.<br>
+		We mean the result of Beta test is the same as the final test.<br>
+	<font color="red">Yes. I will.</font>
+</li>
+<li>
+	Will all of the reset and enable wires of DFFs given in the test case (hidden cases included) be primary input?  or can they be the outputs of some other gates?<br>
+	<font color="red">All reset and enable wires of DFFs are always the primary input.</font>
+</li>
+<li>
+	When will the output of a DFF always be 0? when the reset is 1 or when the rest is 0? Your clarifications in FAQ15 and FAQ 25 are contradict.<br>
+	<font color="red">Please follow the Verilog code in 25.</font>
+</li>
+<li>
+	Unfortunately we don't understand answer to question: "25. Are the "reset", "enable" of DFF's inputs always the primary input of the circuit or they could be any output of a gate?". Can you please give us more formal answer and more detail?<br>
+	<font color="red">In the design cases of the problem A, the clock and reset signals of DFF are from the primary inputs. There is no gated clock or reset signal in our test cases.</font>
+</li>
+<li>
+	I wonder that are these scores also include runtime and memory usage performance? Or do they just show the correctness without considering other constitutes?<br>
+    Another question, are the full marks of the testcases indicates the amount of grouped faults? if not, how can we know the correct amount of grouped faults of each testcases?<br>
+	<font color="red">
+	1. These scores also include runtime and memory usage performance.<br>
+	2. How can we know the correct amount of grouped faults of each testcases?<br> 
+  	&nbsp;&nbsp;&nbsp;&nbsp;A. You can use some formal tools to check all pairs of given faults of the  published 4 cases in the website and then get a golden result.<br> 
+ 	&nbsp;&nbsp;&nbsp;&nbsp;B. After A, you can check your grogram result with the result of A to know the correctness.<br>
+	</font>
+</li>
+<li>
+	Is 100 the full score of each testcase? Does it mean the answers are all correct? How good the performance of runtime and memory usage be can get 100 score?<br>
+	<font color="red"><ol>
+	<li>Yes.</li>
+	<li>Please reference the “Scoring” part of the Problem A in the website.<br>
+  		 60% – the score for the correctness of your result<br>
+  		 30% – the score for the runtime<br>
+   		 10% – the score for the memory usage</li>
+	<li>Please reference the 30-th item in the “FAQ” of the Problem A in the website.</li>
+	</ol>
+	</font>
+</li>
+<li>
+	You provided full marks of three cases on the website( Q28 ). Are they the score of gloden of each cases? The full mark of case01 had a big gap with our golden result. However, our golden results of case02, case03 are the same as yours. Can you check the full mark of case01 again?<br>
+	<font color="red">All cases in Q28 are not the cases in the “III.Test Case”. The case 1 and 2 of Q28 are similar to the case01 and case02 of the “III.Test Case”. The case 3 of Q28 is similar to the case03 and case04 of the "III.Test Case".</font>
+</li> 
+<li>
+	The scoring of correctness is different from the scoring of runtime and memory usage(different from the Q30), right ? I guess that it is scored by the percentage you got in the full mark. For example, if we got 1234 points at the correctness, and the full mark is 2000. Finally, our correctness' score is ( 1234/2000 )*60 ?<br>
+	<font color="red">Yes. The scoring of the correctness is also in the detail page.</font>
+</li>
+<li>
+	Will you release additional cases for us to test ?<br>
+	<font color="red">No. All cases of the final test will be similar to the cases of “III.Test Case” but bigger.</font>
+</li>
+<li>
+	Will the primary input directly be a primary output?<br>
+	i.e. INPUT(500)<br>
+	OUTPUT(500)<br>
+	fault: 1 500 SA0<br>
+	<font color="red">It may occur with a very little probability.</font>
+</li>
+<li>
+	Since we've known the answer of testcase 1~4, can we just print out the answer to save runtime?<br>
+	<font color="red">No. You may have some skills to check the given case and then provide the previous answer if the given case is known. However, it is not the purpose of this contest.<br>
+					To avoid this issue, we won't use any published cases in the website. In previous alpha and Beta test, only one case is the same with one of the published cases. Others are similar not equal to the published cases. Therefore, at most one case can be used this kind of trick. However, no team has more better performance on this case than other cases. No public cases will be used in the final test so there is no chance to use such trick in the final test.
+	</font>
+</li>
+<li>
+	You say that no public cases will be used in the final test. But can you please upload thees cases on the web-site after final?<br>
+	<font color="red">Okay.</font>
+</li>
+<li>
+	Can you say me please about circuit structure? I am interesting in feedback loop in sequence circuit. Are there feedbacks?<br>
+	<font color="red">No feedback circuit.</font>
+</li>
+<li>
+	Say me please about 40th question from FAQ (problem A). You say about small circuit (one net) that "It may occur with a very little probability." OK But there is a logical question: Which kinds of faults can influence on circuit and how?<br>
+	<font color="red">For the 40th FAQ, I mean the chance of the mentioned case in the 40th FAQ is very little. However, whenever it occurs, the SA0 fault on the signal 500 called fault 1 in the 40th FAQ case, it will affect the design output as an error.</font>
+</li>
+<li>
+	In the gate level design file, there are no information about the number of the enable signal from the comments. Will there always  be only one enable signal? Or we have to know that by reading the whole file?<br>
+	<font color="red">You have to know that by reading the whole file.</font>
+</li>
+</ol>

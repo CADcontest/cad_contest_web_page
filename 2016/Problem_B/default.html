@@ -1,0 +1,571 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css"><!--
+  .s1 { font-family: sans-serif; font-weight: normal; font-size: 8pt; }
+ .s2 { font-family: sans-serif; font-weight: normal; font-size: 14pt; }
+ .s3 { font-family: sans-serif; font-weight: normal; font-size: 12pt; }
+ .p, p { font-family: serif; font-weight: normal; font-size: 14.5pt; }
+ .s4, li { font-family: serif; font-weight: normal; font-size: 13.5pt; }
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	line-height: 100%;
+}
+.auto-style5 {
+	text-align: center;
+}
+
+img {
+	padding:5px 0;
+}
+div.figure {
+    width="360px";
+    text-align:center;
+    margin:auto;
+}
+p.caption {
+    margin:auto;
+    display:block;
+    font:italic 12px Georgia, "Times New Roman", Times, serif;
+    color:#333333;
+}
+
+
+  -->
+</style>
+<link href="./Untitled_12.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+window.MathJax = {
+ jax: ["input/TeX","output/HTML-CSS"],
+ extensions: ["tex2jax.js"],
+ tex2jax: {
+  inlineMath: [['$','$'],['\\(','\\)']]
+ },
+};
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div>
+<h1 class="auto-style1">IEEE CEDA / Taiwan MOE, ICCAD 2016 Contest</h1>
+<h2 class="auto-style1">NP3: Non-exact Projective NPNP Boolean Matching</h2>
+<h3 class="auto-style1">Chi-An (Rocky) Wu and Chih-Jen (Jacky) Hsu<i> , <br>Cadence Taiwan, Inc.<br>2F, No.6-5, Du Sing Rd., Hsinchu, Taiwan</i></h3>
+<hr>
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">0. Announcements</h2>
+<p class="auto-style2">
+<ul>
+	<b> Things to be noted when you use read_spef() for incremental timing analysis: <a href="./Docs/incremental_timer_usage.txt">Click here</a></b> <br>
+	<b> TIP: internally increasing MAX_WIRE_SEGMENT_LENGTH (e.g., > 100um) can save memory usage and runtime, while little accuracy is harmed with the current wire model.</b>
+	<li> 11/19/2015: <b>Thank you for your participation in ICCAD Contest 2015. The <a href=#RESULTS>final slides and placements</a> are uploaded.</b>
+	<li> 09/09/2015: The teams must submit a brief abstract describing their methodology in solving the Problem C, along with the final binary. The abstract should be written in README.txt (or .pdf, .doc), and should not be longer than 2000 characters including spaces, containing a maximum of two figures. </font>
+	<li> 08/31/2015: We are now changing default MAX_WIRE_SEGMENT_LENGTH to 100um, to save memory usage, overall runtime, and disk space. Evaluation script tar ball now include the new ICCAD2015.parm. All default outputs are slightly changed. 
+	<li> 08/31/2015: <a href=#RESULTS>Best extra results</a> have been posted.
+	<li> 08/15/2015: Evaluation script updated (ver 1.2.2). No quality changes unless you modify FF-to-LCB association. See <a href=#DOWNLOAD>Download section</a> (<a href="./Docs/release_note.txt">Release Note</a>)
+	<li> 08/11/2015: superblue7 benchmark uploaded in in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 08/11/2015: Timer updated (ver 2.2.2). It does not change the default output on the released benchmarks. Please use the latest timer. The <a href="http://web.engr.illinois.edu/~thuang19/software/timer/OpenTimer.html">timer source codes</a> have been released. 
+	<li> 08/10/2015: <a href=#RESULTS>Best beta results</a> have been posted. Please re-send your binary if you want to get re-evaluation.
+	<li> 07/29/2015: superblue10 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 07/27/2015: superblue4 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 07/01/2015: Evaluation script/timer updated (ver 1.2.1). The default outputs changed a bit, too. See <a href=#DOWNLOAD>Download section</a> and <a href="./Docs/release_note.txt">Release Note</a>. Keep in mind that the new timer API - splice_driver - is NOT to be used for the incremental netlist modification.
+	<li> 06/27/2015: Evaluation script/timer updated (ver 1.2.0). 
+	<li> 06/27/2015: Please make sure to build a static binary that supports <b>GNU/Linux 2.6.18 or lower</b>. Otherwise, it crashes on the contest machine. Type in '<b>file &ltyour binary&gt</b>' and check the minimum kernel version that it supports. You need to rebuild and submit your alpha binary if it is higher than 2.6.18 (<a href="https://stackoverflow.com/questions/11206243/how-to-build-a-static-binary-for-gnu-linux-installations-with-old-kernel">HELP</a>, <a href=#SUBMISSION>contest machine spec.</a>)
+	<li> 06/11/2015: superblue16 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>. Also two max displacement limits posted per design. We test your placer twice per design, varying the limits.
+	<li> 06/08/2015: Evaluation script slightly updated (ver 1.1.2).
+	<li> 06/06/2015: superblue18 benchmark updated (one macro's dimension and placement modified)
+	<li> 06/03/2015: Evaluation scrip/timer updated (ver 1.1.1).
+	<li> 06/02/2015: Contest file format updated in <a href="#BENCHMARKS">Benchmarks section</a>. See the Sec 4. Updates. 
+	<li> 06/02/2015: superblue18 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>
+	<li> 06/02/2015: Evaluation script/timer updated (ver 1.1.0).
+	<li> 05/08/2015: Contest file format uploaded in Benchmarks section.
+	<li> 05/07/2015: <a href=#DOWNLOAD>Download section</a> created. Preliminary parser, spef writer, evaluation script (ver 1.0), and simple test case are uploaded.
+	<li> 04/08/2015: <a href=#TIMER>Timer section</a> created.
+	<li> 03/13/2015: <a href=#FAQ>FAQ section</a> is created. See how this year's contest differs from the <a href="http://cad_contest.ee.ncu.edu.tw/CAD-contest-at-ICCAD2014/problem_b/default.html">last year's</a>. 
+	<li> 03/01/2015: The System Specification details are now released in the main contest webpage.
+</ul></p>
+
+<hr>
+-->
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">1. Important Dates</h2>
+<p class="auto-style2">
+<ul>
+	<li>05/24/2015: Registration deadline
+	<li>06/24/2015: Alpha submission deadline : To pass the test, a binary must be executable on the contest machine and handle arguments properly. See <a href=#SUBMISSION>guidelines</a>.
+	<li>07/28/2015: Beta submission deadline : To pass the test, a binary must generate meaningful solutions on the released benchmarks.
+	<li>09/10/2015: Final submission deadline
+	<li>10/01/2015: Email notification to top three teams
+	<li>11/03/2015: Presentation at ICCAD 2015
+</ul></p>
+
+<hr>
+
+<hr>
+-->
+<a name="RESULTS">
+<h2 class="auto-style5">I. Introduction</h2>
+<p class="auto-style2">
+&nbsp;&nbsp;&nbsp;&nbsp;Boolean Matching [1,2] is one of the most widely-used engines in industrial applications and most widely-studied engines in academic research. Basic Boolean matching is for NPNP-equivalence, which negates (N) and permutes (P) circuit inputs and outputs to achieve circuit equivalences. In this contest, we extend the problem more closely to recent industrial challenges from two directions, Non-exact and Projective. The goal of non-exact is to achieve the largest number of output equivalences; projective extends the matching that allows grouping to match another design. Therefore, Non-exact Projective NPNP (NP3) Boolean matching is a problem to find input-groups of two designs for achieving maximum equivalent output-groups as shown in Figure 1. Beyond the basic NPNP Boolean matching, it could be used for achieving better quality and applied to related applications, such as library binding [3], synthesis [4,5], engineering change order [6,7], logic verification [8], and hardware Trojan detection [9]. In our application, the main issue is to find appropriate input-groups, so the number of circuit outputs in a circuit will be limited to 1~16 in this contest.</p>
+<div class="figure">
+<img class="caption" src="pbf1.png" title="Fig.1" width="720px" height="360px" style="display:block; margin:auto;">
+<p class="caption"><font size="3">Fig.1 NP3 Boolean matching</font></p>
+</div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;In recent academic research, the methods of basic Boolean matching are developed in several approaches including structure-based, simulation-based, and formal methods [2-16]. Each approach has its own advantages and limitations.  In our topic, NP3 Boolean matching is an extension of the basic one and can bring more significant values for research in next generation.</p>
+<hr>
+
+<!----------------------------------------------------->
+<h2 class="auto-style5">II. Contest Objectives</h2>
+	<p>&nbsp;&nbsp;&nbsp;&nbsp;The objective of the contest is to develop a more flexible and powerful Boolean matching engine that can be widely utilized in industry tools. We will provide industrial benchmarks which can represent our challenging problems in diverse applications. We look forward to milestone ideas to achieve optimal matching and bring about new topics in this research area.</p>
+<hr>
+
+<h2 class="auto-style5">III.  FORMAL PROBLEM DEFINITION AND INPUT/OUTPUT FORMAT</h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;Given two combinational circuits, contestants need to find the matching groups of their inputs and outputs that will achieve the largest number of equivalent output groups.  
+                          A matching group consists of corresponding merged inputs along with their phase, or the inputs which should be set to constants. For example, given two circuits in Figure 2, 
+                          the first circuit has output functions $ \{ f_1=(a \land c),f_2=(a \lor (b \land c)) \}$, and the second circuit has output functions $ \{ h_1=(x \lor (-y \land z)),h2=(x \land u) \}$. In order to achieve the most equivalent output-groups, the matching groups could be 
+                          $(a,x), (b,-y), (c,u,z), (f_1,h_2), (f_2,h_1)$ thereby achieving two equivalences$(f_1 == h_2)$and$(f_2 == h_1)$. However, if the matching groups are $(a,-y), (b,u), (c,z), (x=0), (f_1,h_1), (f_2,h_2)$, only one equivalence$(f_1==h_1)$is achieved.</p>
+<div class="figure">
+<img class="caption" src="pbf2.png" title="Fig.1" width="960px" height="280px" style="display:block; margin:auto;">
+<p class="caption"><font size="3">Fig.2</font></p>
+</div>
+<p>In addition, there are some limitations for grouping:</p>
+<ol>
+<li>Every matching group can have only one input or output of the first circuit.</li>
+<li>Contestants cannot bind the inputs of the first circuit to constants.</li>
+<li>One circuit input/output can exist in at most one group.</li>
+</ol>
+
+<br>
+
+<h3>Program Requirements</h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;The requested program should run in a Linux system with a single thread (multiple threads or processes are not allowed). The time limit of running each test case is 1800 seconds in CPU time.
+The executable file should be named “bmatch” and accepts three arguments:</p>
+<p style="border-style:double">./bmatch &lt;cir1.v&gt; &lt;cir2.v&gt; &lt;match.out&gt;</p>
+<p>&lt;cir1.v&gt; &lt;cir2.v&gt; are input files which describe a Verilog circuit individually. &lt;match.out&gt; is an output file where contestants answer the matching groups.</p>
+
+<br>
+
+<h3>Input Format</h3>
+<p>&lt;cir1.v&gt; &lt;cir2.v&gt; is gate-level circuit which has only one module with primitive gates in Verilog. Notice that there may be same name token between &lt;cir1.v&gt; and &lt;cir2.v&gt;.</p>
+<p style="border-style:double">
+<b>modeule</b> &lt;cir_name&gt; ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+<b>input</b>   &lt;name0&gt;, &lt;name1&gt;, …;<br>
+<b>output</b>  &lt;name0&gt;, &lt;name1&gt;,…;<br>
+<b>wire</b>    &lt;name0&gt;, &lt;name1&gt; , …;<br>
+<b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+<b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+…<br>
+<b>endmodule</b><br>
+</p>
+
+<br>
+
+<h3>Output Format</h3>
+<p>&lt;match.out&gt; includes three kinds of matching groups: INGROUP, OUTGROUP, and CONST0GROUP.</p>
+
+<ol type="A">
+<li><b>An INGROUP is the matching group of circuit inputs in both circuits. Its format is:</b>
+	<p style="border-style:double">
+	INGROUP
+    1 + &lt;name0&gt;<br>
+    2 + &lt;name1&gt;<br>
+    2 - &lt;name2&gt;<br>
+    2 + &lt;name3&gt;<br>
+         …<br>
+         END
+	</p>
+	<p>
+	The first character of each line is “1” or “2” which means the circuit input is from &lt;cir1.v&gt; or &lt;cir2.v&gt;. 
+	The second character is “+” or “-“ which means positive or negative phase. 
+	The last string &lt;name0&gt; is the name of a circuit input. Here are some limitation rules for grouping.
+	</p>
+	<ol type="1">
+	<li>A group must include exactly one name of circuit input in <cir1.v>. For example, it cannot be:
+	<p style="border-style:double">
+	   One INGROUP<br>
+       <font color="red">
+       1 + name0<br>
+       1 + name1<br>
+       </font>
+       2 + name2<br>
+       END
+    </p>
+	</li>
+	<li>One circuit input’s name can exist in at most one group. For example, it cannot be:
+	<p style="border-style:double">
+	INGROUP<br>
+    1 + name0<br>
+    <font color="red">2 + name1<br></font>
+    END<br>
+    INGROUP<br>
+    1 + name2<br>
+    <font color="red">2 + name1<br></font>
+    END<br>
+	</p>
+	</li>
+	</ol>
+</li>
+<li><b>An OUTGROUP is the matching group of circuit outputs in both circuits. Its format is:</b>
+   <p style="border-style:double">
+   OUTGROUP<br>
+   1 + &lt;name0&gt;<br>
+   2 + &lt;name1&gt;<br>
+   2 - &lt;name2&gt;<br>
+   2 + &lt;name3&gt;<br>
+       …<br>
+      END<Br>
+   </p>
+   <p>The first character of each line is “1” or “2” which means the circuit output is from &lt;cir1.v&gt; or &lt;cir2.v&gt;. The second character is “+” or “-“ which means positive or negative phase. The last string <name0> is the name of a circuit output.  Here are some limitation rules for grouping:</p>
+   <ol type="1">
+   <li>A group must include exactly one name of circuit output in &lt;cir1.v&gt;</li>
+   <li>One circuit output’s name can exist in at most one group.</li>
+   </ol>
+</li>
+<br>
+<li><b>CONST0GROUP is a group of binding &lt;cir2.v&gt; circuit inputs to constants. There can be at most one CONST0GROUP in &lt;match.out&gt;. Its format is;</b>
+	<p style="border-style:double">
+	CONST0GROUP<br>
+	2 + &lt;name0&gt;<br>
+	2 - &lt;name1&gt;<br>
+	2 + &lt;name2&gt;<br>
+	…<br>
+	END<br>
+	</p>
+	<p>The first character is “2” which means it is in &lt;cir2.v&gt;. The second character is “+” or “-“ which means positive or negative phase to bind the constant. “2 + &lt;name0&gt;” is to bind <name0> to constant 0.”2 - &lt;name1&gt;” is to bind &lt;name1&gt; to constant 1. Here are some limitation rules for grouping:</p>
+	<ol type="1">
+	<li>Only circuit inputs in &lt;cir2.v&gt; are allowed to be in this group. There cannot be any circuit input of &lt;cir1.v&gt; or any circuit output of &lt;cir1.v&gt; and &lt;cir2.v&gt; in this group. For example, it cannot be:
+	<p style="border-style:double">
+	CONST0GROUP<br>
+	<font color="red">
+	1 + name0<br>
+	</font>
+	END<br>
+	</p>
+	</li>
+	<li>If one name exists in this group, it cannot exist in other groups (including an INGROUP and an OUTGROUP). For example, it cannot be:
+	<p style="border-style:double">
+	CONST0GROUP<br>
+	<font color="red">
+	2 + name0<br>
+	</font>
+	END<br>
+	INGROUP<br>
+	1 + name1<br>
+	<font color="red">
+	2 + name0<br>
+	</font>
+	END<br>
+	</p>
+	</li>
+	</ol>
+</li>
+
+</ol>
+
+
+<hr>
+
+
+<h2 class="auto-style5">IV. Evaluation Methodology</h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;In this problem, matching pairs between two designs are most important. Merging outputs and efficiency are the secondary considerations. Hence, we design an evaluation methodology as follows.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;The score of each case is calculated based on the scores of OUTGROUPs. If an OUTGROUP has any non-equivalence, there is no score for this group. If circuit outputs in OUTGROUP are all pair-wise equivalent, the score is 10 + N where N is the number of circuit outputs. The summation of the scores of output groups is the score of this case. The summation of the scores of all cases is the score of your result. The team with the highest score wins the contest.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;For example, given a in &lt;cir1.v&gt; and x, y in &lt;cir2.v&gt;, $a == x == y$. The matching group $(a,x)$ can get a score 10 + 2 = 12. The matching group $(a,x,y)$ can get a score 10 + 3 = 13. However, if $a \neq y$, the matching group $(a,x,y)$ will get a score 0, but the matching group $(a,x)$ still get a score 12.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;If two teams have the same score, the rank will be decided by the total runtime of all cases. If a case runs longer than the time limit of 1800 seconds and there is no <match.out>, this case will get a score 0 and have a runtime of 1800 seconds. Also, a crash case is evaluated to have a runtime of 1800 seconds.</p>
+
+<hr>
+
+<h2 class="auto-style5">V. Example</h2>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;Given a case with two designs:</p>
+<table border="1" align="center">
+	<tr>
+	<td>cir1.v</td>
+	<td>cir2.v</td>
+	</tr>
+	<tr>
+	<td valign="top">
+	module top( a, b, c, g, f, h );<br>
+	input a, b, c;,<br>
+	output g, f, h;<br>
+	and ( f, a, b );<br>
+	or ( h, a, c );<br>
+	xor ( g, f, h );<br>
+	endmodule<br><br><br>
+	<img src="pb23.png" width="360px" height="135px" align="bottom">
+	</td>
+	<td>
+	module top( s, t, u, v, w, x, y, z );<br>
+	input s, t, u, v, w;<br>
+	output x, y, z;<br>
+	wire tn;<br>
+	not ( tn, t );<br>
+	and ( x, w, v, tn );<br>
+	or ( y, w, u, tn );<br>
+	xor ( z, y, s );<br>
+	endmodule<br>
+	<img src="pb24.png" width="360px" height="135px" align="bottom">
+	</td>
+	</tr>
+</table>
+<h3>&nbsp;&nbsp;&nbsp;&nbsp;Team A:</h3>
+<table align="center" border="1" width="50%">
+	<tr >
+	<td colspan="3"><font size="5">match.out</font></td>
+	</tr>
+	<tr >
+	<td><font size="4">
+	OUTGROUP<br>
+	1 + f<br>
+	2 + x<br>
+	END<br>
+	OUTGROUP<br>
+	1 + h<br>
+	2 + y<br>
+	2 - z<br>
+	END<br>
+	</font>
+	</td>
+	<td><font size="4">
+	INGROUP<br>
+	1 + a<br>
+	2 + w<br>
+	2 - t<br>
+	END<br>
+	INGROUP<br>
+	1 + b<br>
+	2 + v<br>
+	END<br>
+	</font>
+	</td>
+	<td valign="top"><font size="4">
+	INGROUP<br>
+	1 + c<br>
+	2 + u<br>
+	END<br>
+	CONST0GROUP<br>
+	2 – s<br>
+	END<br>
+	</font>
+	</td>
+	</tr>
+
+</table>
+<p align="center">$t$ is negatively grouped with w, and s is bind to constant 1, so$f==x$and$h==y==-z$.<br>
+The score is (10+2) + (10+3) = 25, where(10+2) is from $f==x$ and (10+3) is from $h==y==-z$.
+</p>
+
+<h3>&nbsp;&nbsp;&nbsp;&nbsp;Team B:</h3>
+<table align="center" border="1" width="50%">
+	<tr >
+	<td colspan="3"><font size="5">match.out</font></td>
+	</tr>
+	<tr valign="top">
+	<td><font size="4">
+	OUTGROUP<br>
+	1 + f<br>
+	2 + x<br>
+	END<br>
+	OUTGROUP<br>
+	1 + h<br>
+	2 + y<br>
+	END<br>
+	</font>
+	</td>
+	<td><font size="4">
+	INGROUP<br>
+	1 + a<br>
+	2 + w<br>
+	2 - t<br>
+	END<br>
+	INGROUP<br>
+	1 + b<br>
+	2 + v<br>
+	END<br>
+	</font>
+	</td>
+	<td valign="top"><font size="4">
+	INGROUP<br>
+	1 + c<br>
+	2 + u<br>
+	END<br>
+	</font>
+	</td>
+	</tr>
+
+</table>
+<p align="center">$f==x$ and $h==y$ are correct.Hence, Team B gets the score (10+2) + (10+2) = 24.
+</p>
+
+<h3>&nbsp;&nbsp;&nbsp;&nbsp;Team C:</h3>
+<table align="center" border="1" width="50%">
+	<tr >
+	<td colspan="3"><font size="5">match.out</font></td>
+	</tr>
+	<tr valign="top">
+	<td><font size="4">
+	OUTGROUP<br>
+	1 + f<br>
+	2 + x<br>
+	2 + z<br>
+	END<br>
+	OUTGROUP<br>
+	1 + h<br>
+	2 + y<br>
+	END<br>
+	</font>
+	</td>
+	<td><font size="4">
+	INGROUP<br>
+	1 + a<br>
+	2 + w<br>
+	2 - t<br>
+	END<br>
+	INGROUP<br>
+	1 + b<br>
+	2 + v<br>
+	END<br>
+	</font>
+	</td>
+	<td valign="top"><font size="4">
+	INGROUP<br>
+	1 + c<br>
+	2 + u<br>
+	2 - s<br>
+	END<br>
+	</font>
+	</td>
+	</tr>
+
+</table>
+<p align="center">$f==x$ and $h==y$ are correct, but $f==z$ is incorrect.Hence, Team C only get score 12 from $h==y$.
+</p>
+
+<p align="center"><b>Team Ranking:</b>1. Team A ( score 25 )  2. Team B ( score 24 )  3. Team C ( score 12 )</p>
+
+<hr>
+
+<h2 class="auto-style5">VI. Problem Guidance</h2>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;At the start, we suggest contestants write a simple Verilog gate-level parser to put designs into proper circuit structures so that a Boolean matching engine can be developed based on such circuit structures and output &lt;match.out&gt;. Contestants are encouraged to brainstorm for new ideas. For a tutorial and an overview of current algorithms, contestants are advised to survey the course slides [1], the book chapter [2] and the papers related to [16].</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;For old basic Boolean matching, there are some academic papers developed in various aspects: Spectral [3], Signature [2,10,11], Canonical-form [12,13], BDD [3,8,14], and SAT [2,11,15,16]. Notice that they are just for reference and cannot be directly applied to this new topic. Besides, some circuit cases may be too large to be directly represented by BDDs. We encourage contestants to try some new ideas. Your program should generate <match.out> as possible before a time out of 1800 seconds.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;Finally, have fun and welcome to submit questions.</p>
+
+<hr>
+
+<h2 class="auto-style5">VII. Reference</h2>
+<p>
+[1]Hadi Katebi and Igor L. Markov, Large-scale Boolean Matching, DATE, 2010<br>
+
+[2]TingTing Hwang, “Boolean Matching in Logic Synthesis”, course slide.<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;<a href="Ahttp://www.cs.nthu.edu.tw/~tingting/logic/ch5-2.ppt">Ahttp://www.cs.nthu.edu.tw/~tingting/logic/ch5-2.ppt</a><br>
+[3]Luca Benini and Giovanni De Micheli, A Survey of Boolean Matching Techniques for Library Binding,Design Automation Electronic System, ACM, 1997.<br>
+[4]J. Cong and Y.-Y. Hwang, Boolean Matching for LUT-Based Logic Blocks with Applications to Architecture Evaluation and Technology Mapping,<br> &nbsp;&nbsp;&nbsp;&nbsp;CAD Integrated Circuit System, IEEE, 2006.<br>
+[5]C. Yu, L. Wang, C. Zhang, Y. Hu, and L. He, Fast Filter-Based Boolean Matchers, Embedded Systems Letters, IEEE, 2013.<br>
+[6]S. Krishnaswamy, H. Ren, N. Modi, and R. Puri, DeltaSyn: An efficient logic-difference optimizer for ECO synthesis, ICCAD, 2009.<br>
+[7]S.-L. Huang, W.-H. Lin, C.-Y. (Ric) Huang, Match and replace - A functional ECO engine for multi-error circuit rectification, ICCAD, 2011.<br>
+[8]J. Mohnke, P. Molitor, and S. Malik, Application of BDDs in Boolean matching techniques for formal logic combinational verification,<br> &nbsp;&nbsp;&nbsp;&nbsp;Software tools for Technology Transfer, 2001.<br>
+[9]P. Swierczynski, M. Fyrbiak, C. Paar, and C. Huriaux, Protecting against Cryptographic Trojans in FPGAs, FCCM, 2015.<br>
+[10]A. Abdollahi, Signature based Boolean matching in the presence of don’t care, DAC, 2008.<br>
+[11]K.-H. Wang, C.-M. Chan, and J.-C. Liu, Simulation and SAT-Based Boolean Matching for Large Boolean Networks, DAC, 2009.<br>
+[12]G. Agosta, F. Bruschi, G. Pelosi, and D. Sciuto, A Transform-Parametric Approach to Boolean Matching, CAD Integrated Circuit System, IEEE, 2009.<br>
+[13]Z. Huang, L. Wang, Y. Nasikovskiy, and A. Mishchenko, Fast Boolean matching based on NPN classification, ICFPT, 2013.<br>
+[14]S. Chatterjee, A. Mishchenko, R. Brayton, Reducing Structural Bias in Technology Map, ICCAD, 2005<br>
+[15]C.F. Lai, J.-H.R. Jiang, and K.-H. Wang, BooM: A Decision Procedure for Boolean Matching with Abstraction and Dynamic Learning, DAC, 2010<br>
+[16]C.F. Lai, J.-H. R. Jiang, and K.-H. Wang, Boolean Matching of Function Vectors with Strengthened Learning, ICCAD, 2010<br>
+</p>
+<hr>
+<h2 class="auto-style5">VIII. Test Case</h2>
+<ul>
+	<li><a href="./TestCase/cad16_np3_case.tgz">cad16_np3_case</a></li>
+	<li><a href="./TestCase/cad16_np3_case2.tgz">cad16_np3_case2</a></li>
+	<li><a href="./TestCase/cad16_np3_case3.tgz">cad16_np3_case3</a></li>
+	<li><a href="./TestCase/cad16_np3_case_hidden.tgz">cad16_np3_case_hidden.tgz</a></li>
+</ul>
+<hr>
+<h2 class="auto-style5">IX. Beta Test</h2>
+<p align="center"><img src="beta_b.PNG"></p>
+<hr>
+<h2 class="auto-style5">X. FAQ</h2>
+<ol>
+<li>Do the benchmarks always have the same number of outputs?<br>
+	<font color="red">No, we don't assume this. Benchmarks may have different number of outputs.</font>
+</li>
+<li>
+	What is the maximum number of input size and total gate count?<br>
+	<font color="red">The maximum number of input size and total gate count is 1000000, and real provided cases will be much smaller than this number.</font>
+</li>
+<li>
+	Can I have an input in Circuit 1 that is not matched by any input in Circuit 2? That is, will there be any redundant inputs in Circuit 1?<br>
+	<font color="red">Yes, inputs can be non-matched. There may exist extra redundant inputs.</font>
+</li>
+<li>
+	For output convenience, can a matching group be empty? For example:<br>
+	INGROUP<br>
+	1 + name0<br>
+	END<br>
+	or<br>
+	CONST0GROUP<br>
+	END<br>
+	<font color="red">It is OK to be empty for a matching group.</font>
+</li>
+<li>
+	I think the first example in "Output Format" section has a typo: "One INGROUP" should be "INGROUP".<br>
+	<font color="red">Yes, it should be “INGROUP” in the example. “One” is redundant.</font>
+</li>
+<li>
+	I am reading the problem guidance of problem B. But I found that there are mismatchings between the guidance and the reference list. Contestants are advised to survey the course slides [1], the book chapter [2] and the papers related to [16].<br>
+	<font color="red">Yes, the reference should be “the course slides [2], the book chapter [1]”.</font>
+</li>
+<li>
+	Are we allowed to use code written by others, like libraries released under MIT license?<br>
+	<font color="red">Yes. Any library is allowed.</font>
+</li>
+<li>
+	What are all the possible gate types (and, or, xor, etc.) in the circuit?<br>
+	<font color="red">All gate types are in Verilog primitive gate types: and, nand, or, nor, xor, xnor, buf, not.</font>
+</li>
+<li>
+	When the parser read cir2.v in case3, we find that in the 208 209 and 215 line of this benchmark, there is no space before ')'. But in other cases of benchmarks, there isn't such space problem. There are also some other places in this circuit lack of spaces. Is it a bug for this benchmark, it won't appear in the test, or our parser need to distinguish this and do continued?<br>
+    line207: buf ( n248 , n9999 );<br>
+    line208: buf ( n530 , PI_PI_clock);<br>
+	<font color="red">It is not bug and not difficult to parse. Of course, it matches our problem formulation and Verilog format.</font>
+</li>
+<li>
+	Is multi-thread allowed in the evaluation?<br>
+	<font color="red">No. We limit the program in single thread.</font>
+</li>
+<li>
+	What do you mean by redundant? Does it mean redundant to all of the outputs?<br>
+	<font color="red">If you mean "redundant input", it means that changing its value doesn't affect outputs' functions. It may be only redundant to some of the outputs.</font>
+</li>
+<li>
+	The webpage of problem B says that the name of the executable file should be "bmatch", but the email says the name should be same as the registration number. What name should we use?<br>
+	<font color="red">Please follow the pdf of “2016 Alpha Test Announcement_Problem ABC”. Use the register number of your team (e.g., “cada001”).</font>
+</li>
+<li>
+	I noticed that both problem a and c have released the ranking of alpha submission. Will there be any ranking information of problem B?<br>
+	<font color="red">No. In alpha submission, we make sure that contestants can submit valid program and correct output format first.</font>
+</li>
+<li>
+	Will case0~case17 be tested in the final test? Also, are there other hidden testcases?<br>
+	<font color="red"><ol>
+	<li>Yes, case 0~case 17 will be tested in the final test. Their score will be included in the final score.</li>
+	<li>Yes, there will be some other hidden testcases.</li>
+	</ol>
+	</font>
+</li>
+<li>
+	What is the memory limit for each cases?<br>
+	<font color="red">The memory limit is 32GB.</font>
+</li>
+<li>
+	If both teams get no answer for a test case, how to count the running time?<br>
+	<font color="red">The runtime is calculated by when your program finish. It does not depend on the answer. Besides, if your program crash or timeout, the runtime is evaluated to be 1800 seconds.</font>
+</li>
+<li>
+	How does the runtime influence the final result? As you say, if the total score is same, you will check the total runtime. If we know we can not obtain a result for some cases, we will stop the program(not crash). Then the total runtime for these cases is short. Or we can let it run. Then the total runtime is 1800 *n, where n is the number of cases that we can not obtain the results. but it may be not fair. Will you consider a weighted sum score? A case with score x and runtime y will get a score like x/y? Or will you treat all cases with score 0 as runtime 1800?<br>
+	<font color="red">No change. If two teams get same score, the one with shorter runtime is better for efficiency. If you can develop some heuristics to stop, another team also can. Remember there are some hidden cases, and heuristics will also affect hidden cases.</font>
+</li>
+</ol>
+
+

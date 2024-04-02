@@ -1,0 +1,65 @@
+Release Note 
+----------------------------------------------------------------------------------------------------------------------------------------------------
+08/15/15
+	Evaluation Script v1.2.2 : iccad2015_evaluate_solution_0815.tar.gz
+		1. Added handling of .ops for the timer's internal netlist update (update_timer_FF2LCB_association() in evaluation.cpp)
+		2. Added incremental spef writer (write_incremental_spef() in evaluation.cpp)  
+		   You can use the same function for incremental timing query, along with modified net specific
+		   (i) update_pinlocs(), (ii) build_steiner(), (iii) slice_longwires(), and (iv) timer.read_spef().
+		   Keep in mind that once after timer.splice_driver() invocation, you need to write 
+		   PI_drv:o instead in positions of PI pins, whenever you write .spef for the modified nets, 
+
+08/11/15
+	UI-Timer v2.2.2
+		1. Proper handling of critical paths originated from PI drivers
+
+07/01/15
+	Evaluation Script v1.2.1 : iccad2015_evaluate_solution_0701.tar.gz
+		1. Bug fix in PI_driver-to-PI connections with use of new timer APIs (evaluation.cpp)
+	UI-Timer v2.2.1
+		1. Add method splice_driver for evaluation purpose (Do not use it for incremental timing evaluation)
+
+06/26/15
+	Evaluation Script v1.2.0 : iccad2015_evaluate_solution_0626.tar.gz
+		1. Bug fix in PI_driver-to-PI connections with use of new timer APIs (evaluation.cpp)
+		2. Load cap writing in .spef, which was previously written in .timing (evaluation.cpp)
+	UI-Timer v2.2
+		1. Bug fix in reading missing section for nets defined in spef file
+		2. Enable the lazy evaluation for TNS/WNS update
+		3. Add methods set_at/set_slew for runtime assertions for PI-drivers
+
+06/10/15
+	Evaluation Script v1.1.3 : iccad2015_evaluate_solution_0610.tar.gz
+		1. ICCAD15.parm is updated - MAX_LCB_FANOUTS = 50 (from 40)
+		2. Bug fix in FF-to-LCB connection validity check (line 2175 in parser_helper.cpp)
+
+06/08/15
+	Evaluation Script v1.1.2 : iccad2015_evaluate_solution_0608.tar.gz
+		1. generation of *_critical.plt, *_critical.log has been fixed. No slack results change. (line 130 in evaluate.cpp)
+
+06/03/15
+	Evaluation Script v1.1.1 : iccad2015_evaluate_solution_0603.tar.gz
+		1. ICCAD15.parm is updated
+	UI-Timer v2.1.1 : included in the evaluation script
+		1. Fixed the propagation issue of dangling pins
+
+06/02/15 
+	Evaluation Script v1.1.0 : iccad2015_evaluate_solution_0602.tar.gz
+		1. handling of non-rectangular shapes (keyword=OBS) for accurate density and legality check (parser_helper.cpp, check_legality.cpp, evaluate.cpp)
+		2. excluding FF'clk port when calculating WNS/TNS (evaluate.cpp)
+		3. writing spef in the correct units (CAP_SCALE/RES_SCALE in evaluate.cpp)
+		4. example for printing out critical path/plot (evaluate.cpp)
+		5. taking *_Early.lib *_Late.lib as arguments from *.iccad2015 (parser_helper.cpp)
+
+	UI-Timer v2.1.0 : included in the evaluation script
+		1. Nodes will be levelized first during the initialization of timer for speed purpose  
+		2. OMP critical section is added to the function update_spef so as to avoid race condition (segfault) 
+		3. Temporary handling of dangling pins
+
+05/08/15
+	Evaluation Script v1.0 : iccad2015_evaluate_solution_0508.tar.gz
+		1. Initial release 
+04/08/15
+	UI-Timer v2.0
+		1. Initial release
+----------------------------------------------------------------------------------------------------------------------------------------------------

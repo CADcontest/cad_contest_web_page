@@ -1,0 +1,81 @@
+<!DOCTYPE  html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><style type="text/css"><!--
+  .s1 { font-family: sans-serif; font-weight: normal; font-size: 8pt; }
+ .s2 { font-family: sans-serif; font-weight: normal; font-size: 14pt; }
+ .s3 { font-family: sans-serif; font-weight: normal; font-size: 12pt; }
+ .p, p { font-family: sans-serif; font-weight: normal; font-size: 11pt; }
+ .s4 { font-family: sans-serif; font-weight: normal; font-size: 8.5pt; }
+  .auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	line-height: 150%;
+	font-size:medium;
+}
+.auto-style3 {
+	line-height: 150%;
+	text-align: center;
+}
+.auto-style4 {
+	line-height: 100%;
+}
+.auto-style5 {
+	text-align: left;
+}
+  -->
+</style>
+<link href="Untitled_12.css" rel="stylesheet" type="text/css" />
+</head><body><h1 class="auto-style1">2015 CAD Contest </h1>
+<h2 class="auto-style1">Routability-driven macro placement</h2>
+<h3 class="auto-style1">Bauli Yang & Mike Wu,<i> MediaTek Inc., Taiwan</i></h3><hr />
+
+<p class="auto-style2"><font color="red">*Update*: The System Specification details are now released.</font></p>
+
+<h2 class="auto-style1">I.  Introduction</h2><p class="auto-style2">&nbsp;&nbsp;&nbsp;&nbsp;In order to reduce product design cycles, reusable Intellectual Property (IP) modules and embedded memories are widely used. Based on this architecture, a modern very large-scale integration (VLSI) chip usually contains hundreds of hard macros and millions of standard cells. [Chen08] The most popular placement methodology in industry is: (1) macros are placed at legal positions such that some cost metrics (e.g., routability and wirelength) are optimized. (2) after all macros are fixed, standard cells are placed without overlaps (for macros and standard cells) [Chen14]. Followed by the placement stage, a global router evaluates routability of placement results.<br><br>
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;In automatic placement and routing stage, macro placement is not only the first step but also a key step to decide the quality. Macros are usually placed close to chip boundaries, except for some special designs. Based on macros’ positions, standard cells are placed in the remaining space (usually core region).<br><br>
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;While macros and standard cells are placed, a global router evaluates routability of placement results by connecting nets between macros and standard cells under limited routing resources. If routing demand is larger than routing resources in some regions, overflow is induced and the number of overflows indicates the routability of the placement result.<br><br>
+                                                                    <b>citations:</b><br>
+                                                                    [Chen08] MP-Trees: A Packing-Based Macro Placement Algorithm for Modern Mixed-Size Designs in TCAD'08<br>
+                                                                    [Chen14] Routability-driven blockage-aware macro placement in DAC'14<br>
+                                                                   </p>
+
+<h2 class="auto-style1">II. Problem Formal</h2>
+<p class="auto-style2">&nbsp;&nbsp;&nbsp;&nbsp;Given a set of unplaced macros, unplaced standard cells, a set of circuit netlist and placeable sites, place the macros within minimal area of bounding box to optimize routability subject to the given constraints.<br></p>
+<p class="auto-style2"><b>Constraints:</b></p>
+<ul type="disc">
+	<li>The placement of macros must be placed on the given placeable sites.</li>
+	<li>The placement of macros must not overlap with other macros.</li>
+</ul>
+
+<h2 class="auto-style1">III. Input/Output</h2>
+<p class="auto-style2">input -> <b>MacroPlacer</b> -> output<br></p>
+<ul type="a">
+	<li>input (bookshelf)</li>
+		<ul type="i">
+			<li>connection</li>
+			<li>shape of macros/cells</li>
+			<li>iii.	chip boundary (fixed outline: rectilinear)</li>	
+		</ul>
+	<li>output (bookshelf)</li>
+		<ul type="i">
+		<li>location of macros</li>
+		</ul>
+</ul>
+<h2 class="auto-style1">IV. Evaluation</h2>
+<p class="auto-style2"><b>The quality of the placement solutions will be evaluated on the following metrics:</b><br></p>
+<ul type="disc">
+<li>Timing violation improvement (ΔTNS / ΔWNS)</li>
+</ul>
+<p class="auto-style2"><b>The optimization should be subject to the following constraints:</b><br></p>
+<ul type="disc">
+	<li><p class="auto-style2">ACE (Average Congestion Edge)</p>
+	<li><p class="auto-style2">Bounding box area of the macros</p>
+	<li><p class="auto-style2">Run Time</p>
+</ul>
+<ul type="a">
+	<li>Flow: Input -> MacroPlacer -> CellPlacer -> GlobalRouter -> Overflow/Area</li>
+	
+</ul>
+<p class="auto-style2">NTUplace<br></p>
+<p class="auto-style2">NCTUgr<br></p>
+</body></html>

@@ -1,0 +1,726 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css"><!--
+  .s1 { font-family: sans-serif; font-weight: normal; font-size: 8pt; }
+ .s2 { font-family: sans-serif; font-weight: normal; font-size: 14pt; }
+ .s3 { font-family: sans-serif; font-weight: normal; font-size: 12pt; }
+ .p, p { font-family: serif; font-weight: normal; font-size: 14.5pt; }
+ .s4, li { font-family: serif; font-weight: normal; font-size: 14.5pt; }
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	line-height: 100%;
+}
+.auto-style5 {
+	text-align: center;
+}
+
+img {
+	padding:5px 0;
+}
+div.figure {
+    text-align:center;
+    margin:auto;
+}
+p.caption {
+    margin:auto;
+    display:block;
+    font:italic 12px Georgia, "Times New Roman", Times, serif;
+    color:#333333;
+}
+liw:before{
+        counter-increment: num;
+        content: "[" counter(num) "]";
+        margin-right: 5px;
+        font-weight: normal;
+        font-size: 1em;
+        font-family: Helvetica;
+}
+
+  -->
+</style>
+<link href="./Untitled_12.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+window.MathJax = {
+ jax: ["input/TeX","output/HTML-CSS"],
+ extensions: ["tex2jax.js"],
+ tex2jax: {
+  inlineMath: [['$','$'],['\\(','\\)']]
+ },
+};
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">
+</script>
+</head>
+
+<body>
+<div>
+<h1 class="auto-style1">ICCAD 2017 Contest </h1>
+<h2 class="auto-style1">Resource-aware Patch Generation</h2>
+<h3 class="auto-style1">Chih-Jen (Jacky) Hsu, Chi-An (Rocky) Wu and Ching-Yi Huang <br><i>(Cadence Design Systems Inc., Taiwan)</i></h3>
+<hr>
+<!----------------------------------------------------->
+
+<h2 class="auto-style5">0. Announcements</h2>
+<p class="auto-style2">
+<ul>
+    <li>FAQ updated - 2017/08/18</li>
+    <li>Beta test result announcement - 2017/08/11</li>
+     <li>FAQ updated - 2017/08/04</li>
+    <li>TestCase updated - 2017/07/24</li>
+     <li>FAQ updated - 2017/07/21</li>
+    <li>FAQ updated - 2017/07/11</li>
+    <li>Alpha test result announcement - 2017/07/04</li>
+    <li>FAQ updated - 2017/06/03</li>
+    <li>FAQ updated - 2017/05/03</li>
+    <li>TestCase10 updated - 2017/05/02</li>
+    <li>FAQ updated - 2017/04/25</li>
+    <li>FAQ updated - 2017/04/21</li>
+	<li>New Benchmarks released. - 2017/04/19</li>
+    <li>FAQ updated - 2017/03/23</li>
+</ul></p>
+
+<hr>
+
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">1. Important Dates</h2>
+<p class="auto-style2">
+<ul>
+	<li>05/24/2015: Registration deadline
+	<li>06/24/2015: Alpha submission deadline : To pass the test, a binary must be executable on the contest machine and handle arguments properly. See <a href=#SUBMISSION>guidelines</a>.
+	<li>07/28/2015: Beta submission deadline : To pass the test, a binary must generate meaningful solutions on the released benchmarks.
+	<li>09/10/2015: Final submission deadline
+	<li>10/01/2015: Email notification to top three teams
+	<li>11/03/2015: Presentation at ICCAD 2015
+</ul></p>
+
+<hr>
+
+<hr>
+-->
+<a name="RESULTS">
+<h2 class="auto-style5">I. INTRODUCTION</h2>
+    <p class="auto-style2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;With a functional Engineering Change Order (ECO) problem, the quality of patch plays an important role in the performance of the patched circuit. In this contest, contestants need to generate <i>patch functions</i> that will make two circuits equivalent, while minimizing the resource cost of the generated patches. Resource cost is the comprehensive physical cost of all the patches, and minimizing the <i>resource cost</i> implies improving patch quality (timing, power, or area). The resource cost of patches can be modeled as a weighting function with respect to several physical properties of nodes used for patches.</p>
+    
+    <p class="auto-style2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;In this contest, we have assigned each internal node a reasonable <i>constant weight</i> to represent the corresponding physical cost if the node is used for generating patches. Also, the resource cost of the patches is calculated as the <i>weight summation of patches’ support nodes.</i> This formulation can elegantly identify wanted algorithms for the resource-aware patch generation problem.</p>
+    <div class="figure">
+        <img class="caption" src="image/f1.png" title="Fig.1" width="720px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig. 1. Resource-aware patch generation problem.</font></p>
+    </div>
+<hr>
+
+<!----------------------------------------------------->
+    
+    
+<h2 class="auto-style5">II. Background</h2>
+    <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;In a modern design flow, if some functionality has to be changed or functional bugs are found at late stages, restarting the whole synthesis and verification flow is impractical. To save time and cost, automating <i>Engineering Change Orders (ECOs)</i> is more practical. As illustrated in Fig. 1, an automated ECO process can identify the differences between the old circuit $F$ and the new circuit $G$, and generate a corresponding <i>patch function</i> such that $F’$ (the resultant circuit after applying the patch to the old circuit $F$) and $G$ become equivalent. In addition, patch generation plays an important role in the ECO problem because the quality of patch directly influences the performance of the patched circuit. 
+    </p>
+    <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;In an industrial design flow, the functional ECO tool, e.g., <i>Cadence Encounter Conformal ECO Designer</i> [1], has been widely used for industrial cases for years. Although the patch size is an important metric for patch quality, patch generation must consider other physical issues, including timing and power closure, to solve the ECO problem practically. 
+    </p>
+    <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;In academic research, several studies [2-9] have proposed different kinds of algorithms to generate patches. The work has primarily focused on minimizing the patch size. The generated patches, however, may be unusable in industrial problems due to the lack of consideration of physical issues.  
+    </p>
+    <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;Recently, some research addressed the physical issues in functional ECO [10] and some searched for better base functions to generate a target function with better result [11]. In this contest, we will focus on the resource-aware patch generation problem to motivate new ideas for solving the practical ECO problem. 
+    </p>
+   
+<hr>
+    
+<!------------------------------------------------------------->
+    
+<h2 class="auto-style5">III. Contest Objective</h2>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;The objective of this contest is to develop a flexible, scalable, and practical resource-aware patch generation algorithm that can be utilized in industry tools. In this contest, we provide benchmarks that are representatives of industrial problems to facilitate the academic research. Although existing work may not provide feasible solutions for these benchmarks, we look forward to inspiring new research into the functional ECO.</p>
+<hr>
+    
+<!--------------------------------------------------------------->    
+    
+<h2 class="auto-style5">IV. Problem Formulation and Input/Output Format</h2>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;Given two circuits $F$ and $G$, and the weight information of internal nodes in $F$, contestants need to utilize internal nodes in $F$ as supports, called <i>base nodes</i>, to generate <i>patch functions</i> with <i>minimum resource</i> cost at a specific set of <i>target points</i> in $F$ such that $F’$, the patched circuit, and G are equivalent, as Fig. 2 shows. The resource cost is calculated by the weight summation of the used based nodes.
+    </p>
+    <div class="figure">
+        <img class="caption" src="image/f2.png" title="Fig.2" width="720px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig. 2. Problem formulation.</font></p>
+    </div>
+    <h3>Program Requirement</h3>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;The requested program must be run on a Linux system. The time limit of running each testcase is 1800 seconds. Parallel computation with multiple threads or processes is not allowed. The executable file should be named “<i>rpgen</i>” and accepts five arguments:</p>
+    <p style="border-style:solid; width:440px; margin:auto;"><i>&nbsp;&nbsp;./rpgen &lt;F.v&gt; &lt;G.v&gt; &lt;weight.txt&gt; &lt;patch.v&gt; &lt;out.v&gt;</i></p>
+    <ul>
+        <li><i>&lt;F.v&gt; </i>and<i> &lt;G.v&gt;</i> are input files that describe two circuits $F$ and $G$ in Verilog, respectively.</li>
+        <li><i>&lt;weight.txt&gt;</i> is an input file that describes the weight information of internal nodes in the circuit <i>&lt;F.v&gt;</i>. </li>
+        <li><i>&lt;patch.v&gt;</i> is an output file that describes the patch.</li>
+        <li><i>&lt;out.v&gt;</i> is an output file that describes the patched circuit $F’$. Note that <i>&lt;F.v&gt;</i>, <i>&lt;G.v&gt;</i>, <i>&lt;patch.v&gt;</i>, and <i>&lt;out.v&gt;</i> are all combinational circuits with no loop.</li>
+    </ul>
+    <h3>Input Format</h3>
+    <ol type="A">
+        <li>
+            <p><i>&lt;F.v&gt;</i> and <i>&lt;G.v&gt;</i> describe gate-level circuits in Verilog. They have only one module, named <i>top</i>, and contain only primitive gates without hierarchical structure. Target points are indicated by <i>wire</i> declaration with names <font color="red">t_0, t_1, …, t_n</font> in <i>&lt;F.v&gt;</i>; target points are floating and are inputs of some gates. The format is:</p>
+    
+            <table align="center">
+                <tr>
+                    <td><p style="border-style:solid; width:420px; height:320px;"><font size="4" style="line-height:200%">
+                        <b>module</b> top ( &lt;name0&gt;, &lt;name1&gt;, … ); //F.v<br>
+                        <b>input</b> &lt;name0&gt;, &lt;name1&gt;, …;<br>
+                        <b>output</b> &lt;name0&gt;, &lt;name1&gt;,…;<br>
+                        <b>wire</b> &lt;name0&gt;, &lt;name1&gt; , …;<br>
+                        <b>wire</b> <font color="red">t_0, t_1, …; //target points</font><br>
+                        <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                        <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, <font color="red">t_0</font>, &lt;name1&gt;, … );<br>
+                        …<br>
+                        <b>endmodule</b><br>
+                    </font></p></td>
+                     <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                     <td style="width:420px;"><p style="border-style:solid; width:420px; height:320px"><font size="4" style="line-height:200%">
+                        <b>module</b> top ( &lt;name0&gt;, &lt;name1&gt;, … ); //G.v<br>
+                        <b>input</b> &lt;name0&gt;, &lt;name1&gt;, …;<br>
+                        <b>output</b> &lt;name0&gt;, &lt;name1&gt;,…;<br>
+                        <b>wire</b> &lt;name0&gt;, &lt;name1&gt; , …;<br>
+                        <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                        <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                        …<br>
+                        …<br>
+                        <b>endmodule</b><br>
+                    </font></p></td>
+                </tr>
+           </table>
+        </li>
+        <li>
+            <p><i>&lt;weight.txt&gt;</i> describes the weight information of internal nodes of <i>&lt;F.v&gt;</i> with the following format:</p>
+            <p style="border-style:solid; width:250px; height:150px; margin:auto"><font size="4" style="line-height:200%">
+                    &lt;name0> &lt;weight0><br>
+                    &lt;name1> &lt;weight1><br>
+                    &lt;name2> &lt;weight2><br>
+                    …   
+            </font></p>
+            <p>Node name and the corresponding weight are separated by a space character, and different nodes are described in different lines. Internal nodes without assigned weights have <i><b>Infinite (INF)</b></i> weight.</p>
+        </li>
+    </ol>
+    <h3>Output Format</h3>
+    <ol type="A">
+        <li>
+            <p><i>&lt;patch.v&gt;</i> describes the generated patch. It is a gate-level circuit in Verilog, which has only one module, named <i>patch</i>, and only contain primitive gates without hierarchical structure. The format is:</p>
+            <p style="border-style:solid; width:480px; height:320px; margin:auto"><font size="4" style="line-height:200%">
+                <b>module</b> patch ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                <b>input</b> &lt;name0&gt;, &lt;name1&gt;, …;<br>
+                <b>output</b> &lt;name0&gt;, &lt;name1&gt;,…;<br>
+                <b>wire</b> &lt;name0&gt;, &lt;name1&gt; , …;<br>
+                <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                …<br>
+                <b>endmodule</b>
+            </font></p>
+            <p>Note that only one module can be in <i>&lt;patch.v&gt;</i>, even if there are multiple target points, in which case the patch module would have multiple output ports.</p>
+        </li>
+        <li>
+            <p><i>&lt;out.v&gt;</i> describes the patched circuit $F’$.  The content of <i>&lt;out.v&gt;</i> must be the same as <i>&lt;F.v&gt;</i>, except for the added patch instance.  The patch must be represented as a module instance and must be added at the end of the <i>top</i> module (before the <b>endmodule</b> line), as shown in the following example:</p>
+            <p style="border-style:solid; width:540px; height:380px; margin:auto;"><font size="4" style="line-height:200%">
+                        <b>module</b> top ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                        <b>input</b> &lt;name0&gt;, &lt;name1&gt;, …;<br>
+                        <b>output</b> &lt;name0&gt;, &lt;name1&gt;,…;<br>
+                        <b>wire</b> &lt;name0&gt;, &lt;name1&gt; , …;<br>
+                        <b>wire</b> <font color="red">t_0, t_1, …; //target points</font><br>
+                        <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, &lt;name1&gt;, … );<br>
+                        <b>&lt;primitive gate type&gt;</b> ( &lt;name0&gt;, <font color="red">t_0</font>, &lt;name1&gt;, … );<br>
+                        …<br>
+                        <b>patch p0 (<font color="red">t_0, t_1,</font> …, &lt;name0>, &lt;name1>, …); // patch instance</b>
+                        <b>endmodule</b><br>
+            </font></p>
+        </li>
+    </ol>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;In summary, we will check the following items in the output files:</p>
+    <ol>
+        <li>Every line in <i>&lt;out.v&gt;</i> above the patch instance must be the same as that of <i>&lt;F.v&gt;</i> before the <b>endmodule</b> line.</li>
+        <li>The patch instance must be at the last line (just before the <b>endmodule</b> line) in <i>&lt;out.v&gt;</i>.</li>
+        <li><i>&lt;out.v&gt;</i> and <i>&lt;patch.v&gt;</i> must follow the format of primitive gate-level circuit in Verilog. </li>
+        <li>There is only one module in <i>&lt;patch.v&gt;</i> and named <i>patch</i>.</li>
+        <li>The circuit <i>&lt;out.v&gt;</i> with <i>&lt;patch.v&gt;</i> has to be functionally equivalent to the circuit <i>&lt;G.v&gt;</i>.</li>
+        <li>We evaluate the resource cost based on the inputs of the patch instance in <i>&lt;out.v&gt;</i>.</li>
+        <li>We evaluate the patch size according to the gate count in <i>&lt;patch.v&gt;</i>.</li>
+        <li><i>&lt;patch.v&gt;</i> and <i>&lt;out.v&gt;</i> must be combinational circuits with no loop.</li>
+    </ol>
+<hr>
+
+<!---------------------------------------------------------------->
+    
+    
+<h2 class="auto-style5">V. Example </h2>
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unit Case:</h3>
+    <table align="center">
+        <tr>
+            <td style="border-left:solid; border-top:solid;"><i>F.v</i></td>
+            <td style="border-left:solid; border-top:solid;"><i>Weight.txt</i></td>
+            <td style="border-left:solid; border-top:solid; border-right:solid;"><i>G.v</i></td>
+        </tr>
+        <tr>
+            <td style="border-left:solid; border-top:solid; vertical-align:top">
+                module top (y1, y2, a, b, c);<br>
+                input a, b, c;<br>
+                output y1, y2;<br>
+                wire g1, g2, g3;<br>
+                wire <font color="red">t_0</font>;<br>
+                and (g1, a, b);<br>
+                xor (g2, a, c);<br>
+                nor (g3, b, c);<br>
+                and (y1, g1, g2);<br>
+                or (y2, <font color="red">t_0</font>, g3);<br>
+                endmodule
+            </td>
+            <td style="border-left:solid; border-top:solid; vertical-align:top" >
+                a 5<br>
+                b 5<br>
+                c 5<br>
+                g1 2<br>
+                g2 2<br>
+                g3 1<br>
+                y1 1
+            </td>
+             <td style="border-left:solid; border-top:solid; border-right:solid;">
+                module top (y1, y2, a, b, c);<br>
+                input a, b, c;<br>
+                output y1, y2;<br>
+                wire g1, g2, g3, g4;<br>
+                not (g1, c);<br>
+                 and (g2, a, g1);<br>
+                 nor (g3, a, b);<br>
+                 and (g4, b, c);<br>
+                 and (y1, b, g2);<br>
+                 or (y2, g2, g3, g4);<br>
+                 endmodule
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-left:solid; border-top:solid;border-bottom:solid;">
+                <img src="image/unit%20case%201.png" width="480x">
+            </td>
+            <td style="border-left:solid; border-top:solid; border-right:solid; border-bottom:solid;">
+                <img src="image/unit%20case%202.png" width="480x">
+            </td>
+        </tr>
+    </table>
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team A:</h3>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team A uses {a, b, c} as the base nodes to generate the patch at t_0. The corresponding resource cost is 15.</p>
+    <table align="center">
+        <tr>
+            <td style="border-left:solid; border-top:solid;"><i>patch.v</i></td>
+            <td style="border-left:solid; border-top:solid; border-right:solid;"><i>out.v</i></td>
+        </tr>
+         <tr>
+            <td style="border-left:solid; border-top:solid; vertical-align:top">
+                module patch (y, a, b, c);<br>
+                input a, b, c;<br>
+                output y;<br>
+                wire w1, w2;<br>
+                and (w1, a, b);<br>
+                xor (w2, a, c);<br>
+                or (y, w1, w2);<br>
+                endmodule
+            </td>
+            <td style="border-left:solid; border-top:solid; vertical-align:top; border-right:solid;" >
+                module top (y1, y2, a, b, c);<br>
+                input a, b, c;<br>
+                output y1, y2;<br>
+                wire g1, g2, g3;<br>
+                wire <font color="red">t_0</font>;<br>
+                and (g1, a, b);<br>
+                xor (g2, a, c);<br>
+                nor (g3, b, c);<br>
+                and (y1, g1, g2);<br>
+                or (y2, <font color="red">t_0</font>, g3);<br>
+                patch p0 (.y(<font color="red">t_0</font>), .a(a), .b(b), .c(c));<br>
+                endmodule
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-left:solid; border-top:solid;border-bottom:solid;border-right:solid;">
+                <img src="image/Team%20A.png" width="480x">
+            </td>
+        </tr>
+    </table>
+    
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team B:</h3>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team B uses {a, b, c} as the base nodes to generate the patch at t_0. The corresponding resource cost is 15.</p>
+    <table align="center">
+        <tr>
+            <td style="border-left:solid; border-top:solid;"><i>patch.v</i></td>
+            <td style="border-left:solid; border-top:solid; border-right:solid;"><i>out.v</i></td>
+        </tr>
+         <tr>
+            <td style="border-left:solid; border-top:solid; vertical-align:top">
+                module patch (y, a, b, c);<br>
+                input a, b, c;<br>
+                output y;<br>
+                and (w1, a, b);<br>
+                not (w2, a);<br>
+                and (w3, w2, c);<br>
+                or (y, w1, w3);<br>
+                endmodule
+            </td>
+            <td style="border-left:solid; border-top:solid; vertical-align:top; border-right:solid;" >
+                module top (y1, y2, a, b, c);<br>
+                input a, b, c;<br>
+                output y1, y2;<br>
+                wire g1, g2, g3;<br>
+                wire <font color="red">t_0</font>;<br>
+                and (g1, a, b);<br>
+                xor (g2, a, c);<br>
+                nor (g3, b, c);<br>
+                and (y1, g1, g2);<br>
+                or (y2, <font color="red">t_0</font>, g3);<br>
+                patch p0 (.y(<font color="red">t_0</font>), .a(a), .b(b), .c(c));<br>
+                endmodule
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-left:solid; border-top:solid;border-bottom:solid;border-right:solid;">
+                <img src="image/Team%20B.png" width="480x">
+            </td>
+        </tr>
+    </table>
+    
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team C:</h3>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team C uses {g1, g2} as the base nodes to generate the patch at t_0. The corresponding resource cost is 4.</p>
+    <table align="center">
+        <tr>
+            <td style="border-left:solid; border-top:solid;"><i>patch.v</i></td>
+            <td style="border-left:solid; border-top:solid; border-right:solid;"><i>out.v</i></td>
+        </tr>
+         <tr>
+            <td style="border-left:solid; border-top:solid; vertical-align:top">
+                module patch (y, a, b);<br>
+                input a, b;<br>
+                output y;<br>
+                or (y, a, b);<br>
+                endmodule
+            </td>
+            <td style="border-left:solid; border-top:solid; vertical-align:top; border-right:solid;" >
+                module top (y1, y2, a, b, c);<br>
+                input a, b, c;<br>
+                output y1, y2;<br>
+                wire g1, g2, g3;<br>
+                wire <font color="red">t_0</font>;<br>
+                and (g1, a, b);<br>
+                xor (g2, a, c);<br>
+                nor (g3, b, c);<br>
+                and (y1, g1, g2);<br>
+                or (y2, <font color="red">t_0</font>, g3);<br>
+                patch p0 (.y(<font color="red">t_0</font>), .a(g1), .b(g2));<br>
+                endmodule
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-left:solid; border-top:solid;border-bottom:solid;border-right:solid;">
+                <img src="image/Team%20C.png" width="480x">
+            </td>
+        </tr>
+    </table>
+    
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team D (non-equivalence case):</h3>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team D uses {g1, g2} as the base nodes to generate the patch at t_0. The corresponding resource cost is 4. However, the circuit in <i>out.v</i> with patch <i>patch.v</i> is not equivalent to the circuit in <i>G.v</i>.</p>
+    <table align="center">
+        <tr>
+            <td style="border-left:solid; border-top:solid;"><i>patch.v</i></td>
+            <td style="border-left:solid; border-top:solid; border-right:solid;"><i>out.v</i></td>
+        </tr>
+         <tr>
+            <td style="border-left:solid; border-top:solid; vertical-align:top">
+                module patch (y, a, b);<br>
+                input a, b;<br>
+                output y;<br>
+                and (y, a, b);<br>
+                endmodule
+            </td>
+            <td style="border-left:solid; border-top:solid; vertical-align:top; border-right:solid;" >
+                module top (y1, y2, a, b, c);<br>
+                input a, b, c;<br>
+                output y1, y2;<br>
+                wire g1, g2, g3;<br>
+                wire <font color="red">t_0</font>;<br>
+                and (g1, a, b);<br>
+                xor (g2, a, c);<br>
+                nor (g3, b, c);<br>
+                and (y1, g1, g2);<br>
+                or (y2, <font color="red">t_0</font>, g3);<br>
+                patch p0 (.y(<font color="red">t_0</font>), .a(g1), .b(g2));<br>
+                endmodule
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-left:solid; border-top:solid;border-bottom:solid;border-right:solid;">
+                <img src="image/Team%20D.png" width="480x">
+            </td>
+        </tr>
+    </table>
+<hr>
+    
+<!--------------------------------------------------------------->    
+    
+<h2 class="auto-style5">VI. Evaluation Methodology </h2>
+   <p>&nbsp;&nbsp;&nbsp;&nbsp;For each case, the result will be evaluated by the following criteria:</p>
+    <ol>
+        <li>Correctness: The program has to be finished normally. Output files must comply with the output format. The resultant circuit <i>&lt;out.v&gt;</i> with the patch <i>&lt;patch.v&gt;</i> has to be functionally equivalent to <i>&lt;G.v&gt;</i>. Any violation gets score of 0 for that testcase.</li>
+        <li>Time limit: The program has to be finished within 1800 seconds; otherwise, the team gets score of 0 for that testcase.</li>
+        <li>
+            Scoring according to the rank: The teams that pass the above correctness and time limit checking get their scores by their ranks for that testcase. The teams with the rank 1~6 will get scores of {10, 7, 5, 4, 3, 2}, respectively. The remaining teams get a score of 1. Teams are ranked based on the following criteria:
+            <ol type="a">
+                <li>We rank teams according to the resource cost, i.e., the total weight of used base nodes. The smaller is better.</li>
+                <li>If the resource cost ties, we rank the teams by the patch size, i.e., the gate count in a patch. The smaller is better.</li>
+                <li>If teams still tie, we rank them according to the runtime. The less is better.</li>
+            </ol>
+        </li>
+    </ol>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;For example in Section V, Team D gets score of 0 because the patched circuit is not equivalent to the circuit in <i>&lt;G.v&gt;</i>. Next, the resource cost of {Team A, Team B, Team C} is {15, 15, 4}, respectively, and Team C is the first since Team C has the least resource cost. However, because Team A and Team B have the same resource cost, we rank them according to the patch size. The patch size is evaluated by the gate count of a patch, so the patch sizes of Team A and Team B are 3 and 4, respectively. Thus, Team A is the second and Team B is the third. Finally, the scores of {Team A, Team B, Team C, Team D} are {7, 5, 10, 0}, accordingly.</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;In this contest, there will be a half of single fix problems and a half of multiple fix problems for evaluation, either public or hidden.</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;The team earning the highest accumulated scores for all the benchmarks wins the contest.</p>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;In the final test, just for unit1, the teams with the same result and with runtime less than 1 second get the same rank and scores because unit1 is a simple case from the problem description.<br>
+         For example:<br>
+
+          &nbsp;&nbsp;&nbsp;&nbsp;team 1: resource cost = 10, patch size = 4, time = 0.1; team 2: resource cost = 10, patch size = 4, time = 0.2.<br>
+
+          &nbsp;&nbsp;&nbsp;&nbsp;team 3: resource cost = 15, patch size = 4, time = 0.1; team 4: resource cost = 15, patch size = 4, time = 0.2.<br>
+
+          &nbsp;&nbsp;&nbsp;&nbsp;Both team 1 and team 2 get score of 10 (Rank 1), and both team 3 and team 4 get score of 7 (Rank 2).
+    </p>
+<hr>  
+<!--------------------------------------------------------------->     
+
+<h2 class="auto-style5">VII. Problem Guidance </h2>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;You can skip this part if you are familiar with ECO background or algorithms.</p>
+    <ol>
+        <li>You will need a simple Verilog primitive gate-level parser.</li>
+        <li>You will need an equivalence checker to verify your result.</li>
+        <li>Contestants can utilize, modify, or apply ideas from academic papers regarding the ECO problem and patch generation. Refer to the reference listed in Section VIII.</li>
+        <li>To inspire contestants, we provide a baseline algorithm for single fix problems and provide a tutorial with the above example. Refer to Appendix.</li>
+    </ol>
+<hr>
+    
+<!---------------------------------------------------------------> 
+    
+<h2 class="auto-style5">VIII. Reference</h2>
+   <ol>
+       <li>Cadence Encounter Conformal ECO Designer, <a href="https://www.cadence.com/content/cadence-www/global/en_US/home/tools/digital-design-and-signoff/functional-eco/conformal-eco-designer.html">https://www.cadence.com/content/cadence-www/global/en_US/home/tools/digital-design-and-signoff/functional-eco/conformal-eco-designer.html</a></li>
+       <li>K.-H. Chang, I. L. Markov and V. Bertacco, "Fixing Design Errors With Counterexamples and Resynthesis," IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD), vol. 27, no. 1, pp. 184-188, Jan. 2008.</li>
+       <li>S.-L. Huang, W.-H. Lin, P.-K. Huang and C.-Y. Huang, "Match and replace: A functional ECO engine for multi-error circuit rectification," IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD), vol. 32, no. 3, pp. 467-478, March 2013.</li>
+       <li>S. Krishnaswamy, H. Ren, N. Modi and R. Puri, "DeltaSyn: An efficient logic difference optimizer for ECO synthesis," International conference on Computer-Aided Design (ICCAD) - Digest of Technical Papers, 2009, pp. 789-796.</li>
+       <li>C.-C. Lin, K-.C. Chen and M. Marek-Sadowska, "Logic synthesis for engineering change," Design Automation Conference (DAC), 1995, pp. 647-652</li>
+       <li>C.-H. Lin, Y.-C. Huang, S.-C. Chang and W.-B. Jone, "Design and design automation of rectification logic for engineering change," Asia and South Pacific Design Automation Conference (ASP-DAC), 2005, pp. 1006-1009.</li>
+       <li>K.-F. Tang, C.-A. Wu, P.-K. Huang and C.-Y. Huang, "Interpolation-based incremental ECO synthesis for multi-error logic rectification," Design Automation Conference (DAC), 2011, pp. 146-151.</li>
+       <li>K.-F. Tang, P.-K. Huang, C.-N. Chou and C.-Y. Huang, "Multi-patch generation for multi-error logic rectification by interpolation with cofactor reduction," Design, Automation & Test in Europe Conference & Exhibition (DATE), 2012, pp. 1567-1572.</li>
+       <li>B.-H. Wu, C.-J. Yang, C.-Y. Huang and J.-H. R. Jiang, "A robust functional ECO engine by SAT proof minimization and interpolation techniques," International Conference on Computer-Aided Design (ICCAD), 2010, pp. 729-734.</li>
+       <li>A.-C. Cheng, I. H.-R. Jiang and J.-Y. Jou, "Resource-aware functional ECO patch generation," Design, Automation & Test in Europe Conference & Exhibition (DATE), 2016, pp. 1036-1041.</li>
+       <li>A. Petkovska, D. Novo, A. Mishchenko and P. Ienne, "Constrained interpolation for guided logic synthesis," International Conference on Computer-Aided Design (ICCAD), 2014, pp. 462-469.</li>
+    </ol>
+<hr> 
+<!--------------------------------------------------------------->
+
+<h2 class="auto-style5">IX. Testcase</h2>
+   <ul style="line">
+        <li><a href="case/unit1.tar.gz">Unit1</a></li>
+       <li><a href="case/unit2.tar.gz">Unit2</a></li>
+       <li><a href="case/unit3.tar.gz">Unit3</a></li>
+       <li><a href="case/unit4.tar.gz">Unit4</a></li>
+       <li><a href="case/unit5.tar.gz">Unit5</a></li>
+       <li><a href="case/unit6.tar.gz">Unit6</a></li>
+       <li><a href="case/unit7.tar.gz">Unit7</a></li>
+       <li><a href="case/unit8.tar.gz">Unit8</a></li>
+       <li><a href="case/unit9.tar.gz">Unit9</a></li>
+       <li><a href="case/unit10.tar.gz">Unit10</a></li>
+       <li><a href="case/unit11.tar.gz">Unit11</a></li>
+       <li><a href="case/unit12.tar.gz">Unit12</a></li>
+       <li><a href="case/unit13.tar.gz">Unit13</a></li>
+       <li><a href="case/unit14.tar.gz">Unit14</a></li>
+       <li><a href="case/hidden_case.tar.gz">Hidden TestCases</a></li>
+    </ul>
+<hr> 
+<!---------------------------------------------------------------> 
+<h2 class="auto-style5">X. Alpha Test</h2>
+   <center><img src="image/alpha.JPG" width="1260px"></center>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;P.S.<br>												
+        &nbsp;&nbsp;&nbsp;&nbsp;Since unit1 is a simple case from the problem description, the teams with the same result and with runtime less than 1 second get the same rank and scores.<br>												
+        &nbsp;&nbsp;&nbsp;&nbsp;For example, team 1: resource cost = 10, patch size = 4, time = 0.1; team 2: resource cost = 10, patch size = 4, time = 0.2.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Both team 1 and team 2 get score of 10 (Rank 1).
+    </p>
+<hr>
+    
+    
+<h2 class="auto-style5">XI. Beta Test</h2>
+   <center><img src="image/beta_test.PNG" width="960px"></center>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;P.S.<br>												
+        &nbsp;&nbsp;&nbsp;&nbsp; Since unit1 is a simple case from the problem description, the teams with the same result and with runtime less than 1 second get the same rank and scores
+    </p>
+<hr>
+    
+    
+
+<h2 class="auto-style5">XII. Appendix</h2>
+   <h3>Tutorial of baseline algorithm</h3>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;The baseline algorithm utilizes pattern simulation and observes the simulation signatures to generate patch function. We first use the example in Section V to demonstrate the algorithm.</p>
+    <ol type="a">
+        <li>First, introduce input patterns into both <i>F.v</i> and <i>G.v</i>, run simulation, and build up simulation tables of <i>F.v</i> with t_0 = 0, <i>F.v</i> with t_0 = 1, and <i>G.v</i>, respectively. Here we exhaustively simulate all pattern combinations and record simulation values of all nodes.<br><br>
+            <div class="figure">
+            <img class="caption" src="image/Fig%203.png" title="Fig.3" width="480px" style="margin:auto;">
+            <img class="caption" src="image/Fig%203%20-%20b.png" title="Fig.3" width="480px" style="margin:auto;">
+            <p class="caption"><font size="3">Fig. 3. Exhaustive simulation results of F.v and G.v.</font></p>
+            </div>
+            <br><br>
+            <div class="figure">
+            <img class="caption" src="image/f4_1.png" title="Fig.4_1" height="240px" style="margin:auto;">
+            <img class="caption" src="image/f4_2.png" title="Fig.4_2" height="240px" style="margin:auto;">
+            <p class="caption"><font size="3">Fig. 4. Simulation tables for F.v with t_0 = 0, F.v with t_0 = 1, and G.v, respectively.</font></p>
+            </div><br><br>
+        </li>
+        <li>
+            Observe the simulation values at primary outputs. As shown in Fig. 4, we can find that y1 between <i>F.v</i> and <i>G.v</i> are equivalent but y2 are not equivalent under some patterns.
+        </li>
+        <li>
+            Observe the values at y2 and t_0 in tables. As shown in Fig. 5, when observing the table of <i>F.v</i> with t_0 = 0, we can find that the values of t_0 should be changed to 1 under the patterns $S_{on} = \{(a, b, c) = (0, 0, 1), (0, 1, 1), (1, 1, 0), (1, 1, 1)\}$ to fix the output value of y2 for equivalence (you can use simulation again to verify this). On the other hand, when observing the table with t_0 = 1, we can find that the values of t_0 should be changed to 0 under the patterns $S_{off} = \{(0, 1, 0), (1, 0, 1)\}$ for equivalence. Note that we must check that $S_{on}$ and $S_{off}$ should not have intersection, i.e., conflicts. If the intersection is not empty, it means that you cannot generate patch at the target point with these patterns. Finally, t_0 is don’t care under patterns $S_{dc} = \{(0, 0, 0), (1, 0, 0)\}$ since y2 of <i>F.v</i> is equivalent to y2 of <i>G.v</i> no matter what value t_0 is under these patterns.<br><br>
+            <div class="figure">
+            <img class="caption" src="image/f5.png" title="Fig.5" height="240px" style="display:block; margin:auto;">
+            <p class="caption"><font size="3">Fig. 5. Figure out Son, Soff, and Sdc for t_0.</font></p>
+            </div><br><br>
+        </li>
+        <li>Integrate the information acquired from step (c) and build up a new simulation table Table I for new behavior of t_0, as shown in Fig. 6. Now we can synthesize a patch circuit according to Table I.<br><br>
+            <div class="figure">
+            <img class="caption" src="image/f6.png" title="Fig.6" height="240px" style="display:block; margin:auto;">
+            <p class="caption"><font size="3">Fig. 6. Table I.</font></p>
+            </div><br><br>
+        </li>
+        <li>
+            Here we choose g1 and g2 as the base nodes, so the table can be transformed to Table II, as shown in Fig. 7. Note that we must check whether there are conflicts on the values of t_0. If conflict exists, you should try other base node combination.<br><br>
+            <div class="figure">
+            <img class="caption" src="image/f7.png" title="Fig.7" height="240px" style="display:block; margin:auto;">
+            <p class="caption"><font size="3">Fig. 7. Table II.</font></p>
+            </div><br><br>
+        </li>
+        <li>
+            Finally, we synthesize Table II and obtain the patch t_0 = g1 OR g2, as shown in Fig. 8.<br><br>
+            <div class="figure">
+            <img class="caption" src="image/f8.png" title="Fig.8" height="240px" style="display:block; margin:auto;">
+            <p class="caption"><font size="3">Fig. 8. Synthesize the patch t_0 = g1 OR g2 according to Table II.</font></p>
+            </div><br><br>
+        </li>
+        <li>
+            Considering practicability, we can use random patterns instead of exhaustive patterns to generate patch. After simulation, in the synthesis phase, we only consider existing pattern combination, and view the others as don’t cares. For the example shown in Fig. 9, we can still obtain the same patch as that generated at step (f), i.e., t_0 = g1 OR g2. Since the random patterns may not be complete enough for a right patch, you must check the equivalence after patching. If not equivalent, consider more patterns.<br><br>
+            <div class="figure">
+            <img class="caption" src="image/f9.png" title="Fig.9" width="720px" style="display:block; margin:auto;">
+            <p class="caption"><font size="3">Fig. 9. The example with random simulation.</font></p>
+            </div><br>
+        </li>
+    </ol>
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;Algorithm</h3>
+    <table align="center" style="border-style:solid; border-color:black;">
+        <tr>
+            <td><b>Algorithm:</b>&nbsp;&nbsp;<i>Patch_Generation_Single_Fix(F, G)</i></td>
+        </tr>
+        <tr >
+            <td style="border-top:solid">
+            <pre><font size="4px">
+    <font color="green">//Assume there is only one target point t_0</font>
+01: Simulate input patterns for circuits {<i>F<sub>(t_0 = 0)</sub>, F<sub>(t_0 = 1)</sub>, G</i>};<font color="green">// exhaustive or random; step (a)</font>
+02: Build up the simulation tables {<i>T<sub>(F, t_0 = 0)</sub>, T<sub>(F, t_0 = 1)</sub>, T<sub>G</sub></i>} for {<i>F<sub>(t_0 = 0)</sub>, F<sub>(t_0 = 1)</sub>, G</i>}, respectively;<font color="green">// step (a)</font>
+03: Observe output values in {<i>T<sub>(F, t_0 = 0)</sub>, T<sub>(F, t_0 = 1)</sub>, T<sub>G</sub></i>} and mark the NEQ bits in {<i>T<sub>(F, t_0 = 0)</sub>, T<sub>(F, t_0 = 1)</sub></i>}; <font color="green">// step (b)</font>
+04: Generate {<i>S<sub>on</sub>, S<sub>off</sub>, S<sub>dc</sub></i>} for t_0;<font color="green">// step (c)</font>
+    <font color="green">// by flipping t_0 values at NEQ bits in {<i>T<sub>(F, t_0 = 0)</sub></i>, <i>T<sub>(F, t_0 = 1)</sub></i>} and validating through re-simulation</font>
+    <font color="green">// <i>S<sub>on</sub></i>: the pattern set where t_0 should be 1 for EQ</font>
+    <font color="green">// <i>S<sub>off</sub></i>: the pattern set where t_0 should be 0 for EQ</font>
+    <font color="green">// <i>S<sub>dc</sub></i>: the pattern set where t_0 can be either 1 or 0</font>
+05: <b>if</b> <i>S<sub>on</sub></i> ∩ <i>S<sub>off</sub></i>  is ∅ <b>do</b>
+06:   Build up simulation table <i>T<sub>new_t_0</sub></i> for new behavior of t_0 based on {<i>S<sub>on</sub>, S<sub>off</sub>, S<sub>dc</sub></i>};<font color="green">// step (d)</font>
+07:   <b>repeat</b>
+08:     Choose base nodes <i>B</i>;<font color="green">// your method</font>
+09:     Transform table <i>T<sub>new_t_0</sub></i> to <i>T<sub>base_node</sub></i> based on <i>B</i>;<font color="green">// step (e)</font>
+10:     <b>if</b> <i>T<sub>base_node</sub></i> has conflict <b>do</b>
+11:       <b>continue</b>;
+12:     <b>end if</b>
+13:     Synthesize patch <i>R</i> based on <i>T<sub>base_node</sub></i>;<font color="green">// your method; step (f)</font>
+14:     <b>break</b>;
+15:   <b>end repeat</b>
+16:   <b>return</b> <i>R</i>;
+17: <b>end if</b>
+18: <b>return</b> <i>Fail</i>.                
+                </font></pre>
+            </td>
+        </tr>
+    </table>
+<hr> 
+<!--------------------------------------------------------------->
+<h2 class="auto-style5">XIII. FAQ</h2>
+    <p style="border-style:solid">&nbsp;&nbsp;&nbsp;&nbsp;To clarify the program requirement and restriction regarding submitted files and multiple processes, we have modified the corresponding description in Section IV.<br> 
+        &nbsp;&nbsp;&nbsp;&nbsp;Here is the detailed explanation:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>1.</b> You must submit an executable file called ‘<i>rpgen</i>’, and we will run it with required arguments to evaluate your results.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>2.</b> Using open source tools is allowed. If your program needs to call other executable files, we strongly recommend contestants to embed the open source codes into<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;your program and submit only one file rpgen. Otherwise, please make sure your program can link and execute other files/executable files correctly in our environment.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>3.</b> For the sake of fairness, parallel computation with multiple threads or processes is not allowed. Using multiple processes without parallel computation is allowed.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>4.</b> If you want to check whether you set up your submitted file correctly in our environment, please remember to submit your program in Alpha and Beta tests.
+   
+    </p>
+   <ul style="line">
+        <li>Would you give another test case which has more target points?<br>
+            <font color="red">Sure. More testcases, including the cases with multiple target points, will be released in mid-April. We also encourage contestants to create your own testcases for enhancing the algorithms.</font>
+       </li>
+       <li>
+            Does the below requirement mean that we can use any open source equivalence check tools(likeabc)?<i><font color="blue"> 1. You will need an equivalence checker to verify your result.</font></i><br>
+           <font color="red">Yes, you can use any open source equivalence checking tool to help you. <span style="text-decoration:line-through">If your program needs to call the open source equivalence checker, please embed the checker into your source codes and make sure your program can be built correctly in our environment. Please note that you can only submit “one” executable file named “<i>rpgen</i>”.</span>
+            We strongly recommend contestants to embed the open source codes into your program and submit only one file <i>rpgen</i> if your program needs to call the open source equivalence checker. Otherwise, please make sure your program can correctly link and execute other files/executable files in our environment.</font>
+       </li>
+       <li>
+            Is it allowed to use multiple processes without actual parallel computations? It's very useful to limit execution time of algorithm parts or equivalence checker. I used this technique in 2015 CAD Contest, but want to clarify it again.<br>
+           <font color="red">Yes, you can use multiple processes without actual parallel computations. However, please note that parallel computation is not allowed. We have modified the description of Program Requirement and added explanation in FAQ to clarify the corresponding requirement.</font>
+       </li>
+       <li>
+            Which maximal number of inputs can have one gate in patch? Maybe we can extremely reduce patch size by using gates with hundreds of inputs instead of two-input gates.<br>
+            <font color="red">The maximal number of inputs of a gate is 32768.</font>
+       </li>
+       <li>
+            We have a question about opensource tools that we may use in our flow. We are going to make a binary executable “<i>rpgen</i>” and some directory with free CAD tools (abc, Yosys, misII, Espresso, …). Is it allowed to do so? Nowhere in problem statement, we can’t find that there should be only one executable, and from our point of view it is the common practice in CAD development to use large toolchain in conjunction with own dataflow. We need these tools and embedding all of them in our source code will consume much time. It's better to concentrate on actual task, rather than spend time on technical implementation.
+           <font color="red">Thanks for your suggestion. Yes, you can submit other executable files. Please make sure your program <i>rpgen</i> can correctly link and run other executable files in our environment. Moreover, you can use multiple processes but please note that parallel computation is not allowed. We have modified the description of Program Requirement and added explanation in FAQ to clarify the corresponding requirement.</font>
+       </li>
+       <li>
+            I have difficulties with parsing netlist F.v in test case "Unit10". ABC don't read this netlist too. I found that some nets in F.v not declared, namely fanouts of first gates buf ( g349  , g0 ); , … , buf ( g357  , g8 ); Also this test contains a lot of non-driven nets. Here ABC output: "abc 01> read unit10/F.v<br>
+            Warning: Constant-0 drivers added to 120 non-driven nets in network "top":<br>
+            n180, n181, n182, n183 ..."<br>
+            <font color="red">Thanks for the response. The fixed Unit10 has been uploaded. Please check it.   About the non-driven nets, contestants should only take care of the nets named t_0, t_1, t_2, … , i.e., target points. Other non-driven nets should be just declared but not used (do not drive any gate).</font>
+       </li>
+       <li>
+            Which directories are available for writing temporary files? Can I write to current process directory?<br>
+           <font color="red">Yes, you can write temporary files to current process directory.</font>
+       </li>
+       <li>
+            I have a request regarding the installed development tools on the servers. Is it possible to install the followings: (1) readline library (2) devtoolset 6.1 (or 6)<br>
+           <font color="red">(1) readline library has been installed.<br>
+            (2) devtoolset 6 has been installed. To use it, you must use command "scl enable devtoolset-6 tcsh” (just for current terminal). Please make sure your program can correctly run on the test machine. Thus, we strongly recommend you to submit your program in Alpha/Beta tests.
+           </font>
+       </li>
+       <li>
+            Could you install next programs and packages? (1) gcc 4.9+ (preferably 5.2+)   (2) screen or tmux<br>
+           <font color="red">(1) Basically, we provide gcc/g++ with version 4.8.2 by default. If you need newer gcc/g++, please refer to the previous FAQ (devtoolset 6). Please make sure your program can correctly run on the test machine. Thus, we strongly recommend you to submit your program in Alpha/Beta tests.<br>
+            (2) Screen has been installed.
+           </font>
+       </li>
+       <li>
+            For the input files in this problem, do we have to deal with comments? Besides, in the input files, what kind of gate would we have to deal with? We have considered And, Nand, Or, Nor, Xor, Xnor, Not, Buffer. Would there be any other type?<br>
+           <font color="red">No, you do not have to deal with comments. If there exists any comment in the testcases, please tell us. Also, the primitive gates include {and, nand, or, nor, xor, xnor, not, buf}.</font>
+       </li>
+       <li>
+            I found that some gates are not listed in weight.txt. For example : target points are not listed in weight.txt
+            Is the following statement always true? " If a gate has no weight, then every fanout gates of the gate has no weight. "<br>
+           <font color="red">The statement is not true. There is no guarantee for such weight distribution. Also, please note that target points may be listed in weight.txt for some testcases.</font>
+
+       </li>
+       <li>
+        I'm writing to inquire more details about the output format. Is the negative sign "!" ok to use? For example, and( !a, !b ). We use negative signs only in patch.v, out.v will be the same as the input F.v. Or should we transfer the circuit to contain no negative signs?<br>
+           <font color="red">“!” is one of the operators which need further “elaboration”, where the elaboration is ambiguous according to the “gate-count, connection …. “. We can say “!” for single bit is 3 concatenated invertors, or other odd concatenated invertors. So we do not allow the operator here or any construct which needs “elaboration” or “interpretation”. By the way,  “!” is the logical not operator, and  “~” is the bitwise not operator. They are different.</font>
+       </li>
+       <li>
+        We have two questions listed below.<br>
+        1. Use constant to fix target points<br>
+        We found that in some multi-target cases it is possible to use a constant to fix a certain target point. In the patch.v file, can we write for example "assign  t_3 = 1'b1;" to represent we insert constant-1 for t_3? Otherwise, we would need to create constant-1 by adding a dummy OR-gate.<br>
+        2. Is there any penalty for timeout?<br>
+        We developed several algorithms and execute fast one first and then switch to high-effort ones. If the high-effort ones timeout, the patch generated by the fast one would have runtime equals 1800 sec. Besides that, is there any other penalty for the patch? If it outperforms others in weight or size, will it still gain full scores?<br>
+        <font color="red">1. No, the <patch.v> must only contain primitive gates. You can use buf (t_3, 1’b1) to represent the constant. Besides, this does not affect the calculation of resource cost, which is the highest priority to rank teams.<br>
+        2. Although we said that your program has to be finished within 1800 seconds, we actually mean that your program has to generate the results within 1800 seconds. Therefore, if your program indeed generates the output files that can be evaluated, but your program also times out, we will still evaluate the results of the generated files and rank your team accordingly (the runtime is 1800 seconds). For your example, if your patch generated by the fat one outperforms others in resource cost, you will get the full score. However, if the resource cost and patch size of teams tie, we rank the teams according to the runtime, and your runtime is 1800 seconds.
+        </font>
+
+       </li>
+    </ul>
+ 
+<!--------------------------------------------------------------->

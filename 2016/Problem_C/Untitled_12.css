@@ -1,0 +1,56 @@
+﻿a:link
+{
+	color: rgb(0,0,102); 
+}
+a:visited
+{
+	color: rgb(153,102,153); 
+} 
+a:active 
+{
+	color: rgb(153,0,255);
+}
+body
+{
+	font-family: Book Antiqua, Times New Roman, Times;
+	background-color: rgb(255,255,255);
+	color: rgb(102,102,153);
+	padding: 0px;
+	margin: 0px;
+	width: 100%;
+
+}
+h1, h2, h3, h4, h5, h6
+{
+	font-family: Book Antiqua, Times New Roman, Times;
+}
+h1
+{
+	color: rgb(204,153,0);
+}
+h2
+{
+	color: rgb(51,102,51); 
+}
+h3
+{
+	color: rgb(102,0,51); 
+}
+h4
+{
+	color: rgb(51,102,51);
+}
+h5
+{
+	color: rgb(102,0,51);
+}
+h6
+{
+	color: rgb(51,102,51);
+}
+div {
+margin: 20px auto;
+/*border: red 2px solid;*/
+max-width: 1360px;
+width: expression(document.body.clientWidth > 1360? "1360px": "auto" );
+}	

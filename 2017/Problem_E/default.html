@@ -1,0 +1,739 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css"><!--
+  .s1 { font-family: sans-serif; font-weight: normal; font-size: 8pt; }
+ .s2 { font-family: sans-serif; font-weight: normal; font-size: 14pt; }
+ .s3 { font-family: sans-serif; font-weight: normal; font-size: 12pt; }
+ .p, p { font-family: serif; font-weight: normal; font-size: 14.5pt; }
+ .s4, li { font-family: serif; font-weight: normal; font-size: 13.5pt; }
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	line-height: 100%;
+}
+.auto-style5 {
+	text-align: center;
+}
+
+img {
+	padding:5px 0;
+}
+div.figure {
+    text-align:center;
+    margin:auto;
+}
+p.caption {
+    margin:auto;
+    display:block;
+    font:italic 12px Georgia, "Times New Roman", Times, serif;
+    color:#333333;
+}
+
+
+  -->
+</style>
+<link href="./Untitled_12.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+window.MathJax = {
+ jax: ["input/TeX","output/HTML-CSS"],
+ extensions: ["tex2jax.js"],
+ tex2jax: {
+  inlineMath: [['$','$'],['\\(','\\)']]
+ },
+};
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">
+</script>
+</head>
+
+<body>
+<div>
+<h1 class="auto-style1">ICCAD 2017 Contest </h1>
+<h2 class="auto-style1">Power Distribution Network Optimization</h2>
+<h3 class="auto-style1">Yung-Tai Chang, Yow-Tyng Nieh, <i>Industrial Technology Research Institute</i></h3>
+<hr>
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">0. Announcements</h2>
+<p class="auto-style2">
+<ul>
+	<b> Things to be noted when you use read_spef() for incremental timing analysis: <a href="./Docs/incremental_timer_usage.txt">Click here</a></b> <br>
+	<b> TIP: internally increasing MAX_WIRE_SEGMENT_LENGTH (e.g., > 100um) can save memory usage and runtime, while little accuracy is harmed with the current wire model.</b>
+	<li> 11/19/2015: <b>Thank you for your participation in ICCAD Contest 2015. The <a href=#RESULTS>final slides and placements</a> are uploaded.</b>
+	<li> 09/09/2015: The teams must submit a brief abstract describing their methodology in solving the Problem C, along with the final binary. The abstract should be written in README.txt (or .pdf, .doc), and should not be longer than 2000 characters including spaces, containing a maximum of two figures. </font>
+	<li> 08/31/2015: We are now changing default MAX_WIRE_SEGMENT_LENGTH to 100um, to save memory usage, overall runtime, and disk space. Evaluation script tar ball now include the new ICCAD2015.parm. All default outputs are slightly changed. 
+	<li> 08/31/2015: <a href=#RESULTS>Best extra results</a> have been posted.
+	<li> 08/15/2015: Evaluation script updated (ver 1.2.2). No quality changes unless you modify FF-to-LCB association. See <a href=#DOWNLOAD>Download section</a> (<a href="./Docs/release_note.txt">Release Note</a>)
+	<li> 08/11/2015: superblue7 benchmark uploaded in in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 08/11/2015: Timer updated (ver 2.2.2). It does not change the default output on the released benchmarks. Please use the latest timer. The <a href="http://web.engr.illinois.edu/~thuang19/software/timer/OpenTimer.html">timer source codes</a> have been released. 
+	<li> 08/10/2015: <a href=#RESULTS>Best beta results</a> have been posted. Please re-send your binary if you want to get re-evaluation.
+	<li> 07/29/2015: superblue10 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 07/27/2015: superblue4 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>.
+	<li> 07/01/2015: Evaluation script/timer updated (ver 1.2.1). The default outputs changed a bit, too. See <a href=#DOWNLOAD>Download section</a> and <a href="./Docs/release_note.txt">Release Note</a>. Keep in mind that the new timer API - splice_driver - is NOT to be used for the incremental netlist modification.
+	<li> 06/27/2015: Evaluation script/timer updated (ver 1.2.0). 
+	<li> 06/27/2015: Please make sure to build a static binary that supports <b>GNU/Linux 2.6.18 or lower</b>. Otherwise, it crashes on the contest machine. Type in '<b>file &ltyour binary&gt</b>' and check the minimum kernel version that it supports. You need to rebuild and submit your alpha binary if it is higher than 2.6.18 (<a href="https://stackoverflow.com/questions/11206243/how-to-build-a-static-binary-for-gnu-linux-installations-with-old-kernel">HELP</a>, <a href=#SUBMISSION>contest machine spec.</a>)
+	<li> 06/11/2015: superblue16 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>. Also two max displacement limits posted per design. We test your placer twice per design, varying the limits.
+	<li> 06/08/2015: Evaluation script slightly updated (ver 1.1.2).
+	<li> 06/06/2015: superblue18 benchmark updated (one macro's dimension and placement modified)
+	<li> 06/03/2015: Evaluation scrip/timer updated (ver 1.1.1).
+	<li> 06/02/2015: Contest file format updated in <a href="#BENCHMARKS">Benchmarks section</a>. See the Sec 4. Updates. 
+	<li> 06/02/2015: superblue18 benchmark uploaded in <a href=#BENCHMARKS>Benchmarks section</a>
+	<li> 06/02/2015: Evaluation script/timer updated (ver 1.1.0).
+	<li> 05/08/2015: Contest file format uploaded in Benchmarks section.
+	<li> 05/07/2015: <a href=#DOWNLOAD>Download section</a> created. Preliminary parser, spef writer, evaluation script (ver 1.0), and simple test case are uploaded.
+	<li> 04/08/2015: <a href=#TIMER>Timer section</a> created.
+	<li> 03/13/2015: <a href=#FAQ>FAQ section</a> is created. See how this year's contest differs from the <a href="http://cad_contest.ee.ncu.edu.tw/CAD-contest-at-ICCAD2014/problem_b/default.html">last year's</a>. 
+	<li> 03/01/2015: The System Specification details are now released in the main contest webpage.
+</ul></p>
+
+<hr>
+-->
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">1. Important Dates</h2>
+<p class="auto-style2">
+<ul>
+	<li>05/24/2015: Registration deadline
+	<li>06/24/2015: Alpha submission deadline : To pass the test, a binary must be executable on the contest machine and handle arguments properly. See <a href=#SUBMISSION>guidelines</a>.
+	<li>07/28/2015: Beta submission deadline : To pass the test, a binary must generate meaningful solutions on the released benchmarks.
+	<li>09/10/2015: Final submission deadline
+	<li>10/01/2015: Email notification to top three teams
+	<li>11/03/2015: Presentation at ICCAD 2015
+</ul></p>
+
+<hr>
+
+<hr>
+-->
+<a name="RESULTS">
+    
+<h2 class="auto-style5">0. Announcements</h2>
+
+<ul>
+    <li>FAQ Updated - 2017-09-05</li>
+    <li>FAQ Updated - 2017-08-28</li>
+    <li>New TestCase released - 2017-08-21</li>
+    <li>Beta Test Result Announcement - 2017-08-17</li>
+    <li>FAQ Updated - 2017-08-02</li>
+    <li>FAQ Updated - 2017-07-21</li>
+    <li>FAQ Updated - 2017-07-17</li>
+    <li>FAQ Updated - 2017-07-10</li>
+    <li>FAQ Updated - 2017-07-06</li>
+    <li>FAQ Updated - 2017-07-04</li>
+    <li>DRC verification guideline released - 2017/06/27</li>
+    <li>FAQ Updated - 2017-06-13</li>
+    <li>FAQ Updated - 2017-06-08</li>
+    <li>Content Updated - 2017-06-08</li>
+    <li>FAQ Updated - 2017-06-01</li>
+    <li>TestCase Updated - 2017-05-31</li>
+    <li>FAQ Updated - 2017-05-12</li>
+    <li>FAQ Updated - 2017-05-10</li>
+    <li>FAQ Updated - 2017-05-08</li>
+    <li>New testcase released - 2017/04/19</li>
+    <li>FAQ Updated - 2017-03-21</li>
+    <li>New testcase released - 2017/03/20</li>    
+    <li>FAQ Updated - 2017-03-08</li>
+</ul>
+ 
+<hr>
+
+<!----------------------------------------------------->
+
+<h2 class="auto-style5">I. INTRODUCTION</h2>
+    <p class="auto-style2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;A power distribution network (PDN) delivers current from power sources to all devices (including standard cells and hard IPs). As the process shrinks into the deep sub-micron technology, higher chip frequency and increasing power consumption may cause fluctuation of power supply levels and lead to design failure. A robust PDN is essential to ensure reliable circuit operations on a chip. <b>In this problem, given an initial PDN, the contestants have to optimize the power routing with minimum routing resource while satisfying all specified IR-drop constraints.</b></p>
+    <p class="auto-style2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;To reduce the voltage drop, the PDN optimization techniques include <b>wire sizing, wire movement</b> and <b>wire density increment</b>. In addition to these techniques, the contestants are also allowed to re-design or modify the given power routing, resulting in a routing topology, which is different from the initial PDN.</p>
+    <div class="figure">
+        <img class="caption" src="image/f1.jpg" title="Fig.1" width="720px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig.1  Netlist and floorplan of a PDN.</font></p>
+    </div>
+    <p class="auto-stytle2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;Figure 1 shows the netlist and its initial floorplan of a PDN. There are three hard IPs, B1, B2, and B3, and three power sources, VDD1, VDD2, and VDD3. Each power source is connected to some power pins on different hard IPs, where VDD1 is connected to VDD_A/B1, VDD2 is connected to VDD_B/B1, and VDD3 is connected to both VDD_A/B2 and VDD_A/B3. Each power net can be routed with horizontal and vertical metal wires. A metal via must be applied when connecting different metal layers. The usage of upper metal layers is more preferable because of smaller resistance and capacitance.</p>
+    <div class="figure">
+        <img class="caption" src="image/f2.jpg" title="Fig.2" width="540px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig.2 Initial power routing.</font></p>
+    </div>
+    <p class="auto-stytle2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;Figure 2 shows an example of the initial power routing of the PDN. In this example, both horizontal and vertical metal wires in each metal layer can be used for routing power nets. Note that, a hard IP may only employ a certain number of lower metal layers for its internal routing. Hence, upper metal layers, which are not used by hard IPs, can also be used for routing over the underlying hard IPs. </p>
+    <div class="figure">
+        <img class="caption" src="image/f3.jpg" title="Fig.3" width="540px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig.3 PDN optimization.</font></p>
+    </div>
+     <p class="auto-stytle2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;An optimized power routing result is given in Figure 3 based on the following procedure: First of all, we widen the power net from VDD1 to B1/VDD_A in order to satisfy the IR-drop constraint. Then, we shorten the length of the power net from VDD2 to B1/VDD_B. In this example, B3 only contains the layers of Metal 1 to Metal 5, so we can route over B3 with Metal 6 for shorter wire length. Finally, we split the horizontal wires on Metal 6 from VDD3 to B2/VDD_A into three parallel wires. As a result, the resistance of these power wires is nearly threefold reduction, and hence the IR-drop constraint can be satisfied.</p>
+    <p class="auto-stytle2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;The contestants have to produce a power routing result with minimized usage of routing resources. The final routing solution should meet the voltage drop constraints at each power pin of all hard IPs. The NGSPICE software is provided to calculate the voltage drop at each power pin.</p>
+<hr>
+
+<!----------------------------------------------------->
+    
+    
+<h2 class="auto-style5">II. Problem Description</h2>
+    <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;The problem is given the following inputs:</p>
+    <ul>
+        <li>A Verilog netlist file of a design;</li>
+        <li>A DEF (Design Exchange Format) file specifying an initial floorplan of hard IPs and the initial power routing;</li>
+        <li>LEF (Library Exchange Format) files specifying design rules and abstracted information of each hard IP;</li>
+        <li>A file specifying the current drawn by each power pin.</li>
+        <li>A file specifying the voltage of each power source.</li>
+        <li>A file specifying IR-drop constraints.</li>
+        <li>A file containing a weight for each metal layer.</li>
+    </ul>
+   <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;A program must be developed to read/write a DEF file that contains the actual layout including metal wires and vias. It must also generate some other information given in Section 4. Figure 4 shows an output DEF file which describes a power routing solution to the problem given in Figure 3. Note that the dimensions of metal vias can be found in the given LEF file (tech.lef).</p>
+    <div class="figure">
+        <img class="caption" src="image/f4.png" title="Fig.4" width="540px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig.4 An output DEF file for a routing solution.</font></p>
+    </div>
+    <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;A LEF (tech.lef) file contains information about resistance per square of metal wires and vias. The resistance of a metal wire on layer N can be calculated by the following equation:</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;$R_{MetalN}=R_{PeerSq} \times \frac{Metal\ Length}{Metal\ Width}$</p>
+    <p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;An example of the total resistance of the power net from VDD2 to B1/VDD_B is calculated as follows:</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;$R_{VDD2\_B1\_VDD\_B}=R_{Metal5(horizontal)}+R_{via56}+R_{Metal6(Vertical)}+R_{Metal6(horizontal)}$<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$=0.04 \times \frac{(113.7-0)}{10} + 1 + 0.02 \times \frac{(547.9-495)}{10} + 0.02 \times \frac{(1701-103.7)}{10}$<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$=0.4548+1+0.1058+3.1946=4.7552\ ohm$
+    </p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;Suppose the voltage of all power sources is 1.0V. According to the calculated resistances, as shown in Figure 5, the contestants further need to generate a SPICE netlist for IR-drop simulation using the NGSPICE circuit simulator. Figure 6 shows the SPICE netlist for the circuits in Figure 5.</p>
+    <div class="figure">
+        <img class="caption" src="image/f5.png" title="Fig.5" width="540px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig.5 Circuit networks for an optimized power routing solution.</font></p>
+    </div>
+    <div class="figure">
+        <img class="caption" src="image/f6.png" title="Fig.6" width="540px" style="display:block; margin:auto;">
+        <p class="caption"><font size="3">Fig.6  SPICE netlist for the circuits in Figure 5.</font></p>
+    </div>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;We will also provide a binary executable NGSPICE for LINUX environment (as seen the attached file ngspice_26_linux.tgz) for IR-drop simulation. The source code of NGSPICE can be downloaded from the website below. <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://sourceforge.net/projects/ngspice/files/ng-spice-rework/26/">http://sourceforge.net/projects/ngspice/files/ng-spice-rework/26/</a><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;We encourage the contestants to embed the source code into their programs.
+    </p>
+<hr>
+    
+<!------------------------------------------------------------->
+    
+<h2 class="auto-style5">III. Inputs</h2>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;The inputs to the problems given in Figure 1 are detailed below.</p>
+    <ol>
+        <li>Verilog netlist<br>
+           A Verilog netlist consists of a hierarchy of modules, connections between power sources and power pins of hard IPs. (As the attached file case1.v)
+        </li>
+        <li>
+            DEF file<br>
+            An initial DEF file gives the chip size and locations of all power sources and hard IPs. (As the attached file case1_initial.def)
+        </li>
+        <li>
+            LEF files<br>
+            There are two LEF files, tech.lef and blocks.lef, for this problem. The tech.lef gives the resistance per square on each metal layer, the range of wire width, and via size/resistance. The blocks.lef describes the shapes of hard IPs, power pin locations, and the blockages of hard IPs. (As the attached files tech.lef and blocks.lef)
+        </li>
+        <li>
+            The current drawn by each power pin<br>
+            <p style="border-style:solid; width:300px"># The current drawn by each power pin (mA)<br>
+                B1 VDD_A 5<br>
+                B1 VDD_B 2<br>
+                B2 VDD_A 3<br>
+                B3 VDD_A 2<br>
+            </p>
+        </li>
+        <li>
+            The voltage of each power source<br>
+            <p style="border-style:solid; width:300px"># The voltage of each power source (V)<br>
+                VDD1 1.0<br>
+                VDD2 1.0<br>
+                VDD3 1.0<br>
+            </p>
+        </li>
+       <li>
+            IR-drop constraints (in % of the related power source voltage)<br>
+            <p style="border-style:solid; width:300px"># The IR-drop constraint of each power pin (%)<br>
+                B1 VDD_A 1<br>
+                B1 VDD_B 1<br>
+                B2 VDD_A 1.8<br>
+                B3 VDD_A 1.5<br>
+            </p>
+        </li>
+        <li>
+            The weights on metal layers<br>
+            <p style="border-style:solid; width:300px"># The weights on metal layers<br>
+                M1 2.49<br>
+                M2 2.07<br>
+                M3 1.73<br>
+                M4 1.44<br>
+                M5 1.20<br>
+                M6 1<br>
+            </p>
+        </li>
+    </ol>
+<hr>
+    
+<!--------------------------------------------------------------->    
+    
+<h2 class="auto-style5">IV. Outputs</h2>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;The output files for a solution to the problem in Figure 1 are as follows.</p>
+    <ol>
+        <li>DEF file<br>
+            As seen in the attached file “case1_output.def”.
+        </li>
+        <li>
+            A metal usage report file<br>
+            The contestants can calculate the metal usage of a routing solution as follows:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;$Metal\ usage = \sum\limits_{n=1}^N(Total\ Metal\ Area)_{Metal\ n} \times Weight_{Metal\ n}$<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Where N is the number of metal layers used for power routing of hard IPs.<br>
+            <p style="border-style:solid; width:300px"># The metal usage report<br>
+            M5 11881<br>
+            M6 100770<br>
+            Total 115027.2<br>
+            </p>
+        </li>
+        <li>
+            SPICE netlist<br>
+            As seen in the attached file “case1.sp”, which contains the circuit description for a routing solution.
+        </li>
+        <li>
+            Voltage drop report<br>
+            The contestants should employ the following commands to report the voltage at each node for a routing solution based on the NGSPICE simulation.
+            <p style="border-style:solid; width:300px">source case1.sp<br>
+                run<br>
+                quit
+            </p>
+            <p>Figure 7 shows the voltage result after NGSPICE simulation.</p>
+            <div class="figure">
+            <img class="caption" src="image/f7.png" title="Fig.7" width="360px" style="display:block; margin:auto;">
+            <p class="caption"><font size="3">Fig.7  A voltage report at each node.</font></p>
+            </div>
+            <p>The final report that gives IR-drops is shown below (in % of the related power source voltage):</p>
+            <p style="border-style:solid; width:300px"># The IR drop of each power pin (%)<br>
+                B1/VDD_A 0.96<br>
+                B1/VDD_B 0.95<br>
+                B2/VDD_A 1.65<br>
+                B3/VDD_A 1.21
+            </p>
+        </li>
+    </ol>
+<hr>
+
+<!---------------------------------------------------------------->
+    
+    
+<h2 class="auto-style5">V. Evaluation</h2>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;Evaluation priority:</p>
+    <ol>
+        <li>All the output files are correct.(especially DEF file)</li>
+        <li>The output DEF file can’t have DRC (Design Rule Check) error.</li>
+        <li>The voltage drop of each power pin cannot exceed its IR-drop constraint.</li>
+        <li>Minimization of the whole metal usage.</li>
+        <li>Run time.</li>
+    </ol>
+    <table border="1" align="center">
+        <tr align="center">
+            <td rowspan="2"></td>
+            <td colspan="3">Case1</td>
+            <td colspan="3">Case2</td>
+            <td colspan="3">Case3</td>
+            <td rowspan="2">Score</td>
+            <td rowspan="2">Ranking</td>
+        </tr>
+        <tr align="center">
+            <td>DEF pass 0%</td>
+            <td>No DRC 30%</td>
+            <td>Meet IR 70%</td>
+            <td>DEF pass 0%</td>
+            <td>No DRC 30%</td>
+            <td>Meet IR 70%</td>
+            <td>DEF pass 0%</td>
+            <td>No DRC 30%</td>
+            <td>Meet IR 70%</td>
+        </tr>
+        <tr align="center">
+            <td>CAD01</td>
+            <td>○</td>
+            <td>○</td>
+            <td>○</td>
+            <td>○</td>
+            <td>○</td>
+            <td>╳</td>
+            <td>╳</td>
+            <td>--</td>
+            <td>--</td>
+            <td>33+33*30%=42.9</td>
+            <td><font color="red">1</font></td>
+        </tr>
+         <tr align="center">
+            <td>CAD02</td>
+            <td>○</td>
+            <td>○</td>
+            <td>○</td>
+            <td>○</td>
+            <td>╳</td>
+            <td>--</td>
+            <td>○</td>
+            <td>╳</td>
+            <td>--</td>
+            <td>33</td>
+            <td><font color="red">2</font></td>
+        </tr>
+           <tr align="center">
+            <td>CAD03</td>
+            <td>○</td>
+            <td>○</td>
+            <td>╳</td>
+            <td>○</td>
+            <td>○</td>
+            <td>╳</td>
+            <td>○</td>
+            <td>○</td>
+            <td>╳</td>
+            <td>3*(33*30%)=29.7</td>
+            <td><font color="red">3</font></td>
+        </tr>
+    </table>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;An evaluation example is given in Table 1, where Case1 to Case3 are test cases. We evaluate the correctness of DEF files, correctness of DRC, and satisfaction of IR-drop constraints in sequence. Note that, if an output DEF file has syntax errors or DRC errors, we will not evaluate the IR-drop constraints anymore. A team can’t get any score for this benchmark circuit. In addition, if more than one team receives the same score, we will check the metal usage report (priority 4) and program runtime (priority 5) to decide the ranking.</p>
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;Physical guideline:</h3>
+    <ol>
+        <li>Metal wires used for routing different power nets can not be shorted, as shown below.
+            <div class="figure">
+            <img class="caption" src="image/fg.jpg" title="Fg" width="360px" style="display:block; margin:auto;">
+            </div>
+        </li>
+        <li>Minimum and maximum wire width of each metal layer are given in tech.lef. </li>
+        <li>
+            Every two metal wires on a layer must follow the spacing rules in tech.lef.
+        </li>
+        <li>Two hard IPs may abut (i.e. spacing is 0). The spacing rules between metal wires and hard IPs are the same as that given in guideline 3.
+            <div class="figure">
+            <img class="caption" src="image/fg2.jpg" title="Fg2" width="360px" style="display:block; margin:auto;">
+            </div>
+        </li>
+        <li>
+            The via size is defined in tech.lef. The contestants can insert more than one via in an enclosed area (see the figure below). Parallel resistance due to employing multiple vias should be considered.
+            <div class="figure">
+            <img class="caption" src="image/fg3.jpg" title="Fg3" width="360px" style="display:block; margin:auto;">
+            </div>
+        </li>
+        <li>
+            When the total metal area of a bent wire is calculated, the overlapped area at corners should not be counted repeatedly.
+            <div class="figure">
+            <img class="caption" src="image/fg4.png" title="Fg4" width="360px" style="display:block; margin:auto;">
+            </div>
+        </li>
+    </ol>
+<hr>
+
+    
+<!--------------------------------------------------------------->    
+    
+<h2 class="auto-style5">VI. TestCase</h2>
+    
+    <ul>
+        <li><a href="testcase/release_0317.tar.gz">testcase1</a></li>
+        <li><a href="testcase/release_0419.rar">testcase2</a> - 2017/05/31<br>
+            Release_0419說明如下<br>
+            <ol>
+                <li>公布case2相關檔案,包括blocks.lef  case2_input.def  case2.v  initial_files  tech.lef</li>
+                <li>公布DRC驗證流程相關檔案, 包括說明檔Innovus_DRC.pdf與ProblemE_test目錄</li>
+                <li>若要進行DRC驗證 , 輸入的.def檔案需有完整的Design資訊, 不能只讀入SPECIALNETS的資訊.因此請參照更新後的case1_output.def來進行DRC驗證</li>
+                <li>更新case1與case2測試範例中的tech.lef, 其中METAL 6部分PITCH 值改為3</li>
+            </ol>
+        </li>
+        <li>
+            因CIC環境無Innovus軟體, 故改用Cadence encounter軟體來驗證DRC. 同步更新說明檔(<a href="testcase/encounter_DRC.pdf">encounter_DRC.pdf</a>)<br>
+        </li>
+        <li>
+            程式執行時讀入/寫出檔案的順序需統一如下：<br>
+            假設執行檔為cadb001，要執行case1測試檔，程式執行指令應該為：<br>
+            cadb001 case1.v case1_input.def tech.lef blocks.lef initial_files case1_output.def case1.sp output_files
+
+        </li>
+        <li><a href="testcase/case3_0821.tar.gz">testcase3 - 2017/08/21</a><br>
+            <a href="testcase/case3.png">testcase3 Floorplan image</a><br>
+            內有三個initial_file, 請參賽者依序執行<br>
+            參賽者亦可更動initial_file 來自我測試程式<br>
+            未來部分隱藏測試檔有可能只是更改initial_file條件來做測試
+
+        </li>
+    </ul>
+    
+<hr>
+<!--------------------------------------------------------------->  
+
+<h2 class="auto-style5">VII. Alpha Test</h2>
+    
+    <p align="center">
+        &nbsp;&nbsp;&nbsp;&nbsp;目前只有三組寫出與input def一樣的輸出結果，請大家繼續努力!
+    </p>
+    
+<hr>
+<!--------------------------------------------------------------->  
+
+    
+<h2 class="auto-style5">VIII. Beta Test</h2>
+    
+    <p align="center">
+        <img src="image/Problem_e_beta.JPG" width="1080px"><br><br>
+        <!--
+        <font color="blue">藍色代表PASS</font><br>
+        <font color="green">綠色代表在誤差範圍內PASS</font><br>
+        <font color="red">紅色代表NO PASS</font>
+-->
+    </p>
+    
+<hr>
+    
+    
+<!--------------------------------------------------------------->    
+    
+<h2 class="auto-style5">XIV. FAQ</h2>
+    <ol>
+        <li>我們在官網上有看到說他的Benchmark解釋有附一個網址<a href="http://projects.si2.org/openeda.si2.org/projects/lefdef"> http://projects.si2.org/openeda.si2.org/projects/lefdef</a>，這個是用來轉和 lef 跟 def 檔的嗎? 請問詳細的 Benchmark 解釋的 PDF 檔何時會釋出? 還是正式的 Benchmark 都是等報名完才會陸續釋出?<br>
+            <font color="red">去年的Q&A所附的網址，僅用來讓同學查詢LEF跟DEF檔案的定義，並不是用來當LEF跟DEF檔的parser。至於Benchmark 的解釋，如果同學有不懂的地方，可以在Q&A中詢問，Benchmark Case1會在近期內釋出。</font>
+        </li>
+        <li>要如何在makefile裡執行NGSPICE 並同時將其資料回傳到program裡做運算產生outputfile呢?<br>
+            <font color="red">並不是在makefile 執行NGSPICE，而是程式要呼叫NGSPICE進行運算，請參考2016 Q&A 15以及 Q&A 27說明。</font>
+        </li>
+        <li>3.	想要知道有關去年problemE裡的CASE1中 B1_VDDA -> VDD1:其座標分別是(1696,354)(200,0)。假設不管OBS且以Maxwidth最佳解做計算 (1696-200)*0.04/10 + (354-0)*0.02/20+1=7.338Ohm，乘上0.005A 得到IR_DROP是0.03669，約為3.67%。如果要符合LAYER限制這斯呼是不太可能的。想請問這部分是學生對題目有理解錯誤還是有什麼狀況呢(B1_VDDB->VDD2也有相同狀況)?<br>
+            <font color="red">請參考去年題目Fig.2，注意題目中VDD1 to B1/VDDA 全部都用Metal 6繞線，並請參考 2016 Q&A 1。</font>    
+        </li>
+        <li>想請問一下 Rout Line接出道VDD 是只要碰到其中點就好還是要將其填滿呢(如圖)?<br>
+            <img src="image/faq4_1.png" width="360px"><br>
+            <font color="red">舉例case1_input.def, VDD1 power pin在DEF定義中並不會超過design boundary，因此只要連到有design boundary的部分就好，(你原本的圖超過design boundary)</font><br>
+            <img src="image/faq4_2.png" width="540px"><br>
+        </li>
+        <li>
+            Block Pin 有一定的範圍，這是指在這區域裡只要連接到都可以嗎(如圖)?<br>
+            <img src="image/faq5_1.png"><br>
+            <font color="red">是的，我們之後會提供Cadence INNOVUS DRC驗證流程，基本上有通過其驗證即可。</font>
+        </li>
+        <li>
+            關於 Problem E 介紹中的電阻算法，Metal length 皆是以每條線的邊界來計算，但這樣算下來，若是同一層線的轉彎處（vertical 跟horizontal重疊的部分)，會多算一次！<br>
+            <img src="image/faq6.png" width="480px"><br>
+            <font color="red">
+            在本年度的題目當中，為了讓參賽同學可以更容易的計算(直接使用DEF上的資訊)，所以我們在計算繞線電阻值時候，其繞線在轉彎處重疊的部分可以重複計算繞線面積一次(不必像去年一樣要取中點)，以下提供在題目裡，Fig.5 內VDD3到 B2/VDD_A，其中並聯電路的計算式子，如下圖所示:<br>
+            <img src="image/faq6_2.png" width="540px"><br>
+            另外在Output file 之metal usage report中，routing area的計算仍須扣掉轉彎處重疊的部分，若重複計算會造成較大的metal usage，請參賽同學特別注意。
+            </font>
+        </li>
+        <li>
+            在problem E中block.lef有給symmetry，所以在本題的實做中可以更改block的擺放方向嗎？例如從N改為S？<br>
+            <font color="red">不行</font>
+        </li>
+        <li>
+            我想請問一下case2其中的Component，B2_01 block2 + FIXED ( 0 665600 ) S tech.lef中 block2的為 SIZE 700 BY 600 ， 這樣在計算位置時，會超出design boundary ，同樣的情形在B2_02 B3_01 B5_03 也會發生。這部分是否有誤，還是我理解錯誤？<br>
+            <font color="red">Def針對每個block的描述中，最後有個英文字母代表他翻轉的方向, 經過翻轉後是不會超出範圍的，旋轉說明: http://www.ispd.cc/contests/14/web/doc/lefdefref.pdf , page 186
+            Case2的FloorPlan應如下圖所示:<br>
+            </font>
+            <img src="image/faq9.png" width="540px">
+        </li>
+        <li>
+            您好，在去年的Q&A中有說明如何產生電壓檔案，請問在我們繳交的sp檔案中可以包含如下指令嗎?還是必須要去除?謝謝<br>
+            <img src="image/faq10.png" width="540px"><br>
+            <font color="Red">繳交的.sp檔案請去除ngspice指令</font>
+        </li>
+        <li>
+            請問除了目前在def，lef中給的design rule，之後還會給其他design rule或DRC相關資訊嗎?<br>
+            <font color="Red">不會</font>
+        </li>
+        <li>
+            CASE2的initial_files測資有誤：<br>
+            <img src="image/faq12.png" width="240px"><br>
+            <font color="red">
+            Case2 initial_files檔案的內容請更新如下<br>
+            # The current drawn by each power pin (mA)<br>
+            B1_01 VDD_A 5<br>
+            B1_01 VDD_B 2<br>
+            B2_01 VDD_A 4<br>
+            B2_02 VDD_A 4<br>
+            B3_01 VDD_A 10<br>
+            B4_01 VDD_A 3<br>
+            B4_02 VDD_A 3<br>
+            B4_03 VDD_A 4<br>
+            B4_04 VDD_A 4<br>
+            B4_05 VDD_A 5<br>
+            B4_06 VDD_A 5<br>
+            B5_01 VDD_A 5<br>
+            B5_01 VDD_B 6<br>
+            B5_02 VDD_A 5<br>
+            B5_02 VDD_B 6<br>
+            B5_03 VDD_A 5<br>
+            B5_03 VDD_B 6<br>
+            B5_04 VDD_A 5<br>
+            B5_04 VDD_B 6<br>
+            B5_05 VDD_A 5<br>
+            B5_05 VDD_B 6<br><br>
+
+            # The voltage of each power source (V)<br>
+            VDD1 1.0<br>
+            VDD2 1.2<br>
+            VDD3 1.0<br>
+            VDD4 1.4<br>
+            VDD5 1.0<br>
+            VDD6 1.6<br><br>
+
+            # The IR-drop constraint of each power pin (%)<br>
+            B1_01 VDD_A 5<br>
+            B1_01 VDD_B 5<br>
+            B2_01 VDD_A 5<br>
+            B2_02 VDD_A 5<br>
+            B3_01 VDD_A 3<br>
+            B4_01 VDD_A 5<br>
+            B4_02 VDD_A 5<br>
+            B4_03 VDD_A 5<br>
+            B4_04 VDD_A 5<br>
+            B4_05 VDD_A 5<br>
+            B4_06 VDD_A 5<br>
+            B5_01 VDD_A 5<br>
+            B5_01 VDD_B 5<br>
+            B5_02 VDD_A 5<br>
+            B5_02 VDD_B 5<br>
+            B5_03 VDD_A 5<br>
+            B5_03 VDD_B 5<br>
+            B5_04 VDD_A 5<br>
+            B5_04 VDD_B 5<br>
+            B5_05 VDD_A 5<br>
+            B5_05 VDD_B 5<br><br>
+
+            # The weights on metal layers<br>
+            M1 2.49<br>
+            M2 2.07<br>
+            M3 1.73<br>
+            M4 1.44<br>
+            M5 1.20<br>
+            M6 1
+            </font>
+        </li>
+        <li>
+            我想請問關於Problem E的metal的計算方式，我們使用題目給的公式手動計算結果跟題目範例有誤差（有扣除重疊）：
+            M5 = 14257.2  範例=11700
+            M6 = 100770  範例=100800
+            不知道是不是學生計算的方式錯誤（附檔是M5的計算過程），請問可否給我們一份計算範例？
+            <font color="Red">
+                你對於M5 metal usage算出的結果11881是正確的，但在M5 report中應該直接report出11881，在Total結果時再乘上權重1.2，<br>
+                $Total=11881 \times 1.2+100770 = 115027.2$<br>
+                Ex:<br>
+                # The metal usage report<br>
+                M5 11881<br>
+                M6 100770<br>
+                Total 115027.2<br>
+                在程式驗證過程中, 由於我們使用encounter report中 metal density(0.13%)來換算metal usage，因此得到的結果 3000*3000*0.13%=11700，也許跟實際結果會一點差距，但這都在誤差範圍內，不至影響驗證的結果。
+
+            </font>
+        </li>
+        <li>
+            在 case1_output.def 裡，第 56 行 NEW METAL5 10000 + SHAPE STRIPE ( 272600 311600 ) ( * 1005000 ) 的 wire 是從下到上，但是 Fig.3 裡是從上到下，我想請問這裡是不是有打反呢? 上到下應該是  NEW METAL5 10000 + SHAPE STRIPE ( 272600 1005000 ) ( * 311600 )。<br>
+            <font color="red">這是用一塊Metal來描述一個線段，沒有方向性。</font>
+        </li>
+        <li>
+            請問在這一題中會有多個PowerPin連到同一個BlockPin的情況嗎？<br>
+            <font color="red">會。</font>
+        </li>
+        <li>
+            在def的specialnet定義中，例如case1: VDD2 ( * VDD_B )，請問這個*是指同上一個嗎？（如附圖）因為在case2中沒有這樣的情況（如附圖），還是學生理解錯誤了？<br>
+            <img src="image/faq17_1.png" height="720px">&nbsp;&nbsp;&nbsp;&nbsp;<img src="image/faq17_2.png" height="720px"><br>
+            <font color="Red">
+            連線關係請參照netlist: block1 B1 ( .VDD_A(VDD1), .VDD_B(VDD2) ); Case1的vdd2連到B1的VDD_B pin, Def的定義請參照以下網址:<br>
+                <a href="http://projects.si2.org/openeda.si2.org/projects/lefdef">http://projects.si2.org/openeda.si2.org/projects/lefdef</a>
+            </font>
+        </li>
+        <li>
+            我想請問在這題中最後一個評分標準是Run time，那有time limit嗎？<br>
+            <font color="Red">基於測試程式的時效問題，我們對於程式的run time希望在十小時以內。</font>
+        </li>
+        <li>
+            我想請問problem E還會在公佈新的測資嗎？另外想請問會有隱藏測資嗎？<br>
+            <font color="red">再公布case3，會有隱藏測試範例，另外, 參賽者亦可可自行設計/變更input DEF 檔案來測試自己的程式。</font>
+        </li>
+        <li>
+            請問比賽有限制最多可用幾個thread嗎？<br>
+            <font color="red">沒有限制最多可以用幾個thread，我們會統一在同一台CIC提供的機器執行。</font>
+        </li>
+        <li>
+            我想請問一下，metal的層數，在後面的case裡面，有可能會到兩位數，也就是>=10嗎?<br>
+            <font color="red">不會。</font>
+        </li>
+        <li>
+            在alpha test官網裡面寫說，只有三組寫出跟input.def一樣的輸出結果，這句話是什麼意思我有點不了解，這個input檔案不是只是一個initial PDN嗎?<br>
+            <font color="red">以case1為例, 三組寫出來的case1_output.def 跟initial PDN(case1_input.def)是一樣的。</font>
+        </li>
+        <li>
+            再題目裡面說的可以re-design是指說像case2裡面有許多標註為placed類型的block可以重新排列的意思嗎?<br>
+            <font color="red">題目的意思是說, 如果參賽者覺得initial PDN(case*_input.def) 不好, 導致最佳化的結果不夠好，參賽者可以自行re-design 一個新的PDN, 不用基於原有initial PDN進行最佳化，而所有block都不可以重新排列。</font>
+        </li>
+        <li>
+            我想請問在本題中繞線寬度需在maxwidth限制內嗎？<br>
+            <font color="red">是。</font>
+        </li>
+        <li>
+            根據physical guideline第2點，如果超過maxwidth也是合法的解嗎？<br>
+            <font color="red">單條metal的寬度不可以超過maxwidth。</font>
+        </li>
+        <li>
+            re-design一個新的PDN就是按照case1.v裡面的規格直接自己重新連線，或者是可以直接修改initial PDN這樣，所以case1_input.def裡面，若是要自行re-design的話，是可以不用讀SPECIALNETS的部分，是這個意思嗎？<br>
+            <font color="red">是的，只要訊號連線關係跟case1.v所定義的一樣，可以不參考SPECIALNETS的部分(case1_input.def)。</font>
+        </li>
+        <li>
+            在case2_input.def裡面那個不論是PLACED或是FIXED都不能移動嗎?那麼那個PLACED或是FIXED代表著什麼意思呢?<br>
+            <font color="red">PLACED或是FIXED 代表此block的屬性，tool會依據此屬性來進行APR步驟，若有疑問請自行參考def格式定義，<a href="http://projects.si2.org/openeda.si2.org/projects/lefdef">http://projects.si2.org/openeda.si2.org/projects/lefdef</a>，本次題目皆不允許block變動位置方向。</font>
+        </li>
+        <li>
+            請問我們應該如何驗證自己產生sp檔案內容是否正確？像是output.def可以用encounter來驗證，那有辦法驗證sp嗎？還是需要靠我們自己手驗證動？<br>
+            <font color="red">如果.sp語法錯誤, 則容易導致電路斷路(open)，ngspice會產生出很奇怪的IR-drop結果，而電壓電流電阻的計算數值, 請參賽者自行驗證。</font>
+        </li>
+        <li>
+            在大會提供給我們的alpha test結果中，有提到一項LVS，我想請問是否是有一套LVS的驗證程序提供給我們測試spice結果是否正確呢？<br>
+            <font color="red">LVS的驗證程序包括在encounter_DRC.pdf中的”驗證 Connectivity 結果”，因此只要你執行run_case*.tcl (裡面path要對)，若所有violation數目為零就代表通過DRC/LVS 驗證。</font>
+        </li>
+        <li>
+            在guideline的第五點有寫，Parallel resistance due to employing multiple vias should be considered，那這個的resistance有寫在哪個檔案裡面嗎，在那些檔案裏面我沒有找到相關的資訊？<br>
+            <font color="red">題目意思是說, 單顆via的電阻值假設是1 ohm，在線寬允許的條件之下, 如果接了兩顆via，則電阻值減半為0.5 ohm，各metal間的via電阻值在tech.lef中都可查詢得到。</font>
+        </li>
+        <li>
+            我想請問在本題中關於metal包覆via，如附圖這樣是合法的嗎？因為我們跑.tcl用encounter驗證是通過的。<br>
+            <font color="red">請參照題目中，Physical guideline的第五點，這樣並不符合規範。</font><br>
+            <img src="image/faq31.png" width="720px">
+        </li>
+        <li>
+            請問最後繳交結果，主辦方驗證DRC是使用現在提供的同一套tcl 驗證嗎？只用現在提供的腳本檢驗過不過，還是會有另一套驗證方式？<br>
+            <font color="red">此script主要提供給參賽者驗證PDN是否存在Open / Short的問題，另外在Physical Guideline描述的規範，也必須同步遵守。</font>
+        </li>
+        <li>
+            假如有一個Pin在metal 6，我可以將線繞道該pin的正下方，再直接用via繞上來接上那個Pin嗎?<br>
+            <font color="red">請參照block.lef中, 每個pin所在的metal層，請確保連進pin的metal wire，與pin所在的metal是同一層。你提到的作法，如果metal 5沒有出pin，則是不行的。</font>
+        </li>
+        <li>
+            我想問via能放在pin點上嗎？換句話說，能在pin上換層嗎？<br>
+            <font color="red">請參照block.lef中，每個pin所在的metal層，請確保連進pin的metal wire，與pin所在的metal是同一層。</font>
+        </li>
+        <li>
+            (1)output_file裡面，IR-drop的部分是要自己計算，還是使用spice跑出來的結果呢？<br>
+            <font color="red">IR-drop的結果需先輸出spice netlist，再由ngspice得出最後結果。</font><br>
+            (2)那這樣的話是不是要分成兩個指令呢？印出spice netlist之後，執行ngspice，再將IR-drop寫到output_file裡面，意思是我必須再把ngspice執行的結果parse進去嗎? 抱歉我有點看不懂網站上面寫的意思，還是執行完ngspice之後會自動跑出那個結果?<br>
+            <font color="red">題目的意思是寫出SPICE netlist之後，需外掛ngspice 程式得到IR-drop結果之後，再將此結果寫在output_files檔案內<br>，
+            請參考 “2016” problem E<br>
+            Q&A 15<br>
+            Q&A 17(1)<br>
+            Q&A 22(2)<br>
+            Q&A 26<br>
+            Q&A 27 => 介紹如何用ngspice command line 方式寫出IR-drop結果。
+            </font>
+        </li>
+        <li>
+            請問之後還會公佈新的測資嗎？還是case3是跟去年的一樣，學生可以自行下載使用？或是今年只有兩個測資<br>
+            <font color="red">有case3即將公布。</font>
+        </li>
+        <li>
+            每個testcase是否一定可以產生至少一個能符合ir-drop的解？學生現在在嘗試著解case3的問題時（程式解+手動解），盡可能最大化使用可繞線空間，但還是無法讓每個target都能過ir-drop，是否每個case一定可以至少產生一個解？亦或是有可能會有只有部分通過的情況？<br>
+            <font color="red">因為case2已有隊伍可以全部達到IR-drop constraints，所以針對Case3, 我們出題的條件是 => 在達不到所有IR-drop constraints的情形之下，程式可以盡量完成PDN optimization，達到IR-drop constraints的比例越高越好，不可core dumped。</font>
+        </li>
+        <li>
+            我想請問之後隱藏測資會有multi source的情況嗎？（例如像去年的case3）<br>
+            <font color="red">會喔!</font>
+        </li>
+        <li>
+            (1). 請問當我們換層時，兩條金屬線的線寬不同的話，（如下圖）是只需要放一個via就可以了，還是要放多個via呢？<br>
+            (2).請問在sp檔中，若有轉彎處的線是要取下圖的A點還是B點作為座標點呢？<br>
+            <img src="image/faq39_1.png" width="180px">&nbsp;&nbsp;&nbsp;&nbsp;<img src="image/faq39_2.png" width="180px"><br>
+            <font color="red">
+            (1)如題目中Physical guideline:第五點提到，可以只放一個via，或在空間允許下放多個via(可並聯降低電阻值，Q&A 28亦有提到)<br>
+            (2)sp檔裡面沒有描述座標，只有各線段電阻值的描述，如果是指def 以及R值的計算，則都是以A(95,100) 以及C(100,105)為起始點或終點來計算，如下圖。<br>
+            <img src="image/faq39_3.png" width="180px">
+            </font>
+        </li>
+        <li>
+            因為官方給的VIA本身已經有包覆上下兩層的金屬了，我們在試DRC的過程中，沒有完全包覆VIA還是能通過DRC，請問這樣還需要將VIA全部包覆起來嗎?(如圖DRC是有通過的)<br>
+            <img src="image/faq40.png" width="360px"><br>
+            <font color="red">可以通過DRC，是因為現有DRC rule不夠齊備，如同FAQ 29，請參照題目中 Physical guideline的第五點，metal需完整的包覆via才符合規範。</font>
+        </li>
+    </ol>
+  
+<!--------------------------------------------------------------->     
+

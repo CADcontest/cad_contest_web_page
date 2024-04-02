@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title></title>
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<!--Created by jolephoto - http://jole.ahtr.net -->
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<style type="text/css">
+	a img {
+		border: none;
+		vertical-align: middle;
+	}
+
+	#abgne-110223 {
+		height: 630px;	/* 圖片的高 + 30 */
+		width: 904px;	/* 圖片的寬 + 邊框寬度 * 2 */
+		overflow: hidden;
+		left:50px; 
+	}
+
+	#abgne-110223 .wrap-110223 {
+		height: 600px;	/* 圖片的高 */
+		width: 900px;	/* 圖片的寬 */
+		overflow: hidden;
+		position: relative;
+		left:50px; 
+		margin-bottom: 5px;
+		border: 2px solid #ccc;
+	}
+
+	.wrap-110223 ul, .wrap-110223 li {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.wrap-110223 ul {
+		position: absolute;
+	}
+
+	.wrap-110223 ul li {
+		float: left;
+	}
+
+	#abgne-110223 .arrows {
+		float: right;
+	}
+
+	#abgne-110223 .arrows a {
+		float: left;
+		width: 22px;
+		height: 22px;
+		background: url(arrows.png) no-repeat left top;
+	}
+
+	#abgne-110223 a.next {
+		
+		margin-left: -1px;
+		background-position: right top;
+	}
+
+	#abgne-110223 .caption {
+		float: left;
+		width: 356px;		/* 區塊的寬 - .arrows 的寬(44) */
+		overflow: hidden;	/* 避免文字太長 */
+		color: #666;
+		font-size: 13px;
+		margin-left:70px; 
+		line-height: 22px;	/* .arrows a 的高 */
+	}
+	
+</style>
+<script type="text/javascript">
+	$(function(){
+		// 先取得 #abgne-110223 及 ul, li 及 .caption 元素
+		// 並預設先顯示第幾個, 還有動畫速度
+		var $block = $('#abgne-110223'), 
+			$wrap = $block.find('.wrap-110223'), 
+			$ul = $wrap.find('ul'), 
+			$li = $ul.find('li'), 
+			$caption = $block.find('.caption'), 
+			_default = 0, 
+			_width = 900, 
+			animateSpeed = 400, 
+			timer, speed = 200000, isHover = false;
+
+		// 先把 ul 的寬度設成 li 數量 x $wrap 的寬
+		// 並在滑鼠移上時停止計時器; 移出後再啟動計時器
+		$ul.width(_width * $li.length).hover(function(){
+			isHover = true;
+			clearTimeout(timer);
+		}, function(){
+			isHover = false;
+			timer = setTimeout(move, speed);
+		});
+		// 如果 .arrows 中的 a 被點擊時
+		$block.find('.arrows').delegate('a', 'click', function(event){
+			// 如果滑鼠現在是移入狀態就不做動作
+			if(isHover) return;
+			clearTimeout(timer);
+
+			// 先找出 .selected 的元素後移掉該樣式
+			var $selected = $li.filter('.selected').removeClass('selected'), 
+				// 找出目前顯示的元素是第幾個
+				_index = $li.index($selected);
+			
+			// 依點擊的是上一張或下一張來切換
+			_index = (event.target.className == 'prev' ? _index - 1 + $li.length : _index + 1) % $li.length;
+			$ul.animate({
+				left: _index * _width * -1
+			}, animateSpeed, function(){
+				if(!isHover){
+					timer = setTimeout(move, speed);
+				}
+			});
+			// 改變標題
+			$caption.hide().html($li.eq(_index).addClass('selected').find('img').attr('alt')).fadeIn(animateSpeed);
+
+			return false;
+		});
+		
+		// 先顯示預設的
+		$ul.css('left', _default * _width * -1);
+		$caption.html($li.eq(_default).addClass('selected').find('img').attr('alt'));
+		
+		$block.find('a').focus(function(){
+			this.blur();
+		});
+		
+		// 控制移動用
+		function move() {
+			$('.next').click();
+		}
+		
+		// 啟動計時器
+		timer = setTimeout(move, speed);
+	});
+</script>
+
+<body>
+
+
+<div id="header">
+
+<!--<div id="links">
+<a href="http://jole.ahtr.net">jolephoto</a> | <a href="#">your link</a> | <a href="#">your link</a> | <a href="#">your link</a>
+</div> -->
+
+<!--<h2><img id="logo" src="images/logo.png" alt="jolephoto" /></h2> -->
+
+<!--<div id="slogan">
+...brought to you by the letter 'J'.
+</div>  -->
+
+</div>
+
+
+<div id="sidebar">
+	<div id="nav">
+		<ul>
+			<li><a href="index.html">Home</a></li>
+			<li><a href="Registration.html">Registration</a></li>
+			<li><a href="News.html">News</a></li>			
+			<li><a href="Problems.html">Problems</a></li>
+			<li><a href="FAQ.html">FAQ</a></li>
+			<li><a href="Calendar.html">Calendar</a></li>
+			<li><a href="Contact.html">Contact</a></li>
+			<li><a href="Previous.html">Previous Contests Archive</a></li>
+			<li><a href="Album.html" style="color:yellow">Album</a></li>
+		</ul>
+	</div>
+	<div id="digg" class="container">
+		<p style="padding:0;" id="show">
+			<img style="margin-bottom:-3px;" src="images/little-digg.png" alt="digg" />&nbsp;&nbsp;In the news...
+		</p>
+
+<!--<h4>In the news...</h4>-->
+		<ul class="rss-items">
+			<li class="rss-item"><a class="rss-item"  title="" rel="new">You are invited to participate!</a><br />
+			</li>
+			<!--<li class="rss-item"><a class="rss-item" href="http://digg.com/apple/Free_Beethoven_and_Mozart_Recordings_on_iTunes" title="" rel="new">Free Beethoven and Mozart Recordings on iTunes</a><br />
+			</li>
+			<li class="rss-item"><a class="rss-item" href="http://digg.com/tech_news/Internet_Explorer_Unsafe_for_284_Days_in_2006" title="" rel="new">Internet Explorer Unsafe for 284 Days in 2006</a><br />
+			</li>
+			<li class="rss-item"><a class="rss-item" href="http://digg.com/design/Eiffel_Tower_Made_of_7464_Matches_23_photos" title="" rel="new">Eiffel Tower Made of 7464 Matches (23 photos)</a><br />
+			</li>
+			<li class="rss-item"><a class="rss-item" href="http://digg.com/software/Ten_Ways_to_Use_LinkedIn" title="" rel="new">Ten Ways to Use LinkedIn</a><br />
+			</li>
+			<li class="rss-item"><a class="rss-item" href="http://digg.com/apple/MacAppADay_is_over_Rated_a_complete_waste_of_time" title="" rel="new">MacAppADay is over. Rated a complete waste of time.</a><br />
+			</li>
+			<li class="rss-item"><a class="rss-item" href="http://digg.com/apple/Apple_seen_launching_new_iPod_iTV_and_iPhone_at_Macworld" title="" rel="new">Apple seen launching new iPod, iTV and iPhone at Macworld</a><br />
+			</li>-->
+		</ul>
+	</div>
+</div>
+
+
+
+
+
+<center>
+<div id="content">
+
+
+<div id="page">
+
+		<div id="abgne-110223" >
+			<table border="0" width="100%">
+				<div class="wrap-110223" >
+					<ul >
+						<li><a href="#"><img src="CAD_Photo/c1.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c2.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c3.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c4.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c5.jpg" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c6.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c7.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c8.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c9.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c10.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c11.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c12.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c13.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c14.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c15.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c16.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c17.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c18.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c19.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c20.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c21.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c22.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c23.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c24.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c25.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c26.jpg" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c27.JPG" alt=" "/></a></li>	
+						<li><a href="#"><img src="CAD_Photo/c28.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c29.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c30.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c31.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c32.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c33.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c34.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c35.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c36.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c37.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c38.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c39.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c40.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c41.JPG" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c42.png" alt=" "/></a></li>
+						<li><a href="#"><img src="CAD_Photo/c43.png" alt=" "/></a></li>
+			
+					</ul>
+				</div>
+				<div class="caption"></div>
+				<div class="arrows">
+					<a href="#" class="prev"></a>
+					<a href="#" class="next"></a>
+				</div>
+			</table>
+		</div>
+	
+	<div style="clear: both;"> <br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="green"><a href="CAD_Photo.rar">Download Album</a></font></div>
+</div>
+</div>
+</center>
+
+<div id="footer">
+<p>
+Copyright © 2016 CAD Contest. All Rights Reserved.</p> 
+</div>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,469 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css"><!--
+  .s1 { font-family: sans-serif; font-weight: normal; font-size: 8pt; }
+ .s2 { font-family: sans-serif; font-weight: normal; font-size: 14pt; }
+ .s3 { font-family: sans-serif; font-weight: normal; font-size: 12pt; }
+ .p, p { font-family: serif; font-weight: normal; font-size: 14.5pt; }
+ .s4, li { font-family: serif; font-weight: normal; font-size: 13.5pt; }
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	line-height: 100%;
+}
+.auto-style5 {
+	text-align: center;
+}
+
+img {
+	padding:5px 0;
+}
+div.figure {
+    text-align:center;
+    margin:auto;
+}
+p.caption {
+    margin:auto;
+    display:block;
+    font:italic 12px Georgia, "Times New Roman", Times, serif;
+    color:#333333;
+}
+p.captionl {
+    
+    font:italic 12px Georgia, "Times New Roman", Times, serif;
+    color:#333333;
+}
+
+
+  -->
+</style>
+<link href="./Untitled_12.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+window.MathJax = {
+ jax: ["input/TeX","output/HTML-CSS"],
+ extensions: ["tex2jax.js"],
+ tex2jax: {
+  inlineMath: [['$','$'],['\\(','\\)']]
+ },
+};
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">
+</script>
+</head>
+
+<body>
+<div>
+<h1 class="auto-style1">ICCAD 2017 Contest </h1>
+<h2 class="auto-style1">Net Open Location Finder with Obstacles</h2>
+<h3 class="auto-style1">Cindy Shen and Kai-Shun Hu<br><i>Synopsys Taiwan Co., Ltd., <br>29F, No. 333, Section 1, Keelung Road, Taipei, Taiwan
+</i></h3>
+<hr>
+<!----------------------------------------------------->
+
+<h2 class="auto-style5">0. Announcements</h2>
+<p class="auto-style2">
+    <ul>
+        <li>Beta test result announcement - 2017/08/08</li>
+        <li>FAQ updated - 2017/08/02</li>
+        <li>FAQ updated - 2017/07/25</li>
+        <li>Evaluator updated - 2017/07/21</li>
+        <li>FAQ updated - 2017/07/21</li>
+        <li>Benchmarks updated. - 2017/07/10</li>
+        <li>FAQ updated - 2017/07/06</li>
+        <li>Alpha test result announcement - 2017/07/04</li>
+        <li>FAQ updated - 2017/06/19</li>
+        <li>Evaluator updated - 2017/06/12</li>
+        <li>FAQ updated - 2017/06/12</li>
+        <li>FAQ updated - 2017/05/31</li>
+        <li>FAQ updated - 2017/05/23</li>
+        <li>FAQ updated - 2017/05/19</li>
+        <li>FAQ updated - 2017/04/17</li>
+        <li>FAQ updated - 2017/04/12</li>
+        <li>Benchmarks released. - 2017/03/24</li>
+    </ul>
+</p>
+
+<hr>
+
+<!----------------------------------------------------->
+<!--
+<h2 class="auto-style5">1. Important Dates</h2>
+<p class="auto-style2">
+<ul>
+	<li>05/24/2015: Registration deadline
+	<li>06/24/2015: Alpha submission deadline : To pass the test, a binary must be executable on the contest machine and handle arguments properly. See <a href=#SUBMISSION>guidelines</a>.
+	<li>07/28/2015: Beta submission deadline : To pass the test, a binary must generate meaningful solutions on the released benchmarks.
+	<li>09/10/2015: Final submission deadline
+	<li>10/01/2015: Email notification to top three teams
+	<li>11/03/2015: Presentation at ICCAD 2015
+</ul></p>
+
+<hr>
+
+<hr>
+-->
+<a name="RESULTS">
+<h2 class="auto-style5">I. Abstract</h2>
+<p class="auto-style2" align="justify">&nbsp;&nbsp;&nbsp;&nbsp;In the place and route (P&R) flow, a router might still leave some nets open after routing is done. These opens are usually caused by ECO (Engineering Change Order) or some user changed design. Thus it is very helpful to have an automatic tool to detect if a net is still open after routing. Also, a tool should indicate the (shortest) paths to reconnect existing net shapes to resolve the open. Furthermore, the indicated paths must be obstacle-aware for that a path overlap with obstacles is not legitimate in a real case.</p>
+   
+<hr>
+
+<!----------------------------------------------------->
+    
+    
+<h2 class="auto-style5">II. Problem Description</h2>
+    <ul>
+        <li>This problem focuses on a <b>single net</b> with large scattered routed net shapes. The contestants are requested to generate paths to connect all these routed net shapes and vias while having minimum line length/via cost.</li>
+        <li>Given a set of routed net shapes $R = \{R_1,R_2,…,R_j\}$, a set of routed net vias $V = \{v_1,v_2,…,v_k\}$, a set of obstacles $O = \{O_1,O_2,…,O_m\}$ on routing layers $L = \{M_1,V_1,M_2,V_2,…,V_{n-1},M_n\}$, with a design boundary $B$, spacing $S$ and via cost $C_v$</li>
+        <li>Contestants are requested to find a set of paths $p = \{p_1, p_2,…,p_l\}$ to connect all routed net shapes $R$ and routed net vias $V$ together. </li>
+        <li>Each path $p_i$ can be an H-line, a V-line or a via. Steiner points are allowed.</li>
+        <li>Examples:<br>
+            <div class="figure">
+            <img class="caption" src="./image/f1.png" title="Figure1" width="540px" style="display:block;">
+            <p class="captionl" align="left" style="margin-left:120px;"><font size="3">Figure1. Paths generated to fix the opens</font></p>
+            </div>
+        </li>
+        <li>As shown in Figure 1, the blue rectangles are the routed net shapes $R$ of a net containing some opens. Your goal is to output a set of paths to connect the existing net shapes to form a single connected component. </li>
+        <li>The path set $p$ consists of red lines and orange vias. The path set in this figure is one of the valid outputs that contestants could generate.</li>
+        <li>The gray rectangles are the obstacles $O$. The paths (line/via) should always keep a minimum spacing $S$ to these obstacles.</li>
+        <li>The outmost rectangle is the design boundary $B$. The paths (line/via) should always keep a minimum spacing $S$ to it as well.</li>
+        <li>Detailed Rules:<br>
+            <ul>
+                <li>Format of Shapes/Lines/Vias<br>
+                    <ul>
+                        <li>A point in this problem is expressed as a pair of  <b>non-negative integers.</b></li>
+                        <li><b>Points have no area and lines have no width</b> (more explanations later).</li>
+                        <li>The routed net shapes $R$, obstacles $O$ and design boundary $B$ are always rectangles represented by their upper right (UR) and lower left (LL) corners.</li>
+                        <li>The routed net vias $V$ and your output vias are always points.</li>
+                        <li>Your output lines must be horizontal(y-equal) or vertical(x-equal) lines.</li>
+                    </ul>
+                </li>
+                <li>Format of Metal/Via Layers<br>                   
+                            <div class="figure">
+                            <img class="caption" src="./image/f2.png" title="Figure2" width="540px" style="display:block;">
+                            <p class="captionl" align="left" style="margin-left:200px"><font size="3">Figure2. Layer stack in a given problem</font></p>
+                            </div>
+                     <ul>
+                        <li>Layers are stacked like those shown in Figure 2. </li>
+                        <li>All layers are aligned with the same coordinate system in the x and y axes.</li>
+                        <li>All the routed net shapes $R$ and obstacles $O$ and lines exist only on metal layers.</li>
+                        <li>A via on layer $V_{i-1}$ connects the same point of $M_{i-1}$ and $M_i$.</li>
+                    </ul>
+                </li>
+                <li>Definition of Connection<br>
+                    <table>
+                        <tr>
+                            <td><img  src="./image/f3a.png" title="Figure3a" width="320px" style="display:inline;">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td><img  src="./image/f3b.png" title="Figure3b" width="270px" style="display:inline;"></td>
+                        </tr>
+                        <tr>
+                            <td><p class="captionl" align="center"><font size="3">Figure3a. Lines connecting net shapes</font></p></td>
+                            <td><p class="captionl" align="center"><font size="3">Figure3b. Lines not connecting net shapes</font></p></td>
+                        </tr>
+                    </table>
+                    <ul>
+                        <li>Any point touching between line/via/netShapes counts the connection.</li>
+                        <li>For Figure 3b, these two lines do not connect the existing net shapes because the end points of the lines are not on the routed net shapes.</li>
+                        <li>Stacked via is also considered as connected.</li>
+                    </ul>
+                </li>
+                <li>Steiner point identification<br>
+                    <table>
+                        <tr>
+                            <td><img  src="./image/f4a.png" title="Figure4a" width="320px" style="display:inline;"></td>
+                            <td><img  src="./image/f4b.png" title="Figure4b" width="270px" style="display:inline;"></td>
+                        </tr>
+                        <tr>
+                            <td><p class="captionl" align="center"><font size="3">Figure4a. Lines and vias not conntected</font></p></td>
+                            <td><p class="captionl" align="center"><font size="3">Figure4b. Lines and vias conntected</font></p></td>
+                        </tr>
+                    </table>
+                    <ul>
+                        <li>You should identify the location of Steiner point. For lines and vias, we only check if the end points are touched, as shown in Figure 4.</li>
+                    </ul>
+                </li>
+                <li>Spacing to Obstacles and Boundaries<br>
+                    <img  src="./image/f5.png" title="Figure5" width="360px" style="display:inline;">
+                    <p class="captionl" style="margin-left:120;"><font size="3">Figure5. valid path.</font></p>
+                     <ul>
+                        <li>As mentioned, a line in this problem has no width. So the path in Figure 5 is valid.</li>
+                        <li>You only need to consider the spacing to obstacles and boundaries because all routed net shapes and via are for the same net.</li>
+                        <li>The given routed net shapes/via will always keep a minimum spacing S to these obstacles and boundaries.</li>
+                    </ul>
+                </li>
+                <li>Multi-threading Allowed and Encouraged.
+                    <ul>
+                        <li>The maximum number of cores that can be used is 4.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+<hr>
+    
+<!------------------------------------------------------------->
+    
+<h2 class="auto-style5">III. Evaluation Methodology</h2>
+    <ul>
+        <li>Overall $Cost=\sum\limits_{q=1}^t=Cost(p_q)+Disjoint \ cost$<br>
+            <ul>
+                <li>If $p_q$ is a H-line or V-line, Cost($p_q$) = length of this H-line or V-line.</li>
+                <li>If $p_q$ is a via, Cost($p_q$) = $C_v$.</li>
+            </ul>
+        </li>
+        <li>The goal is to minimize the overall cost for each case.</li>
+        <li>There are several things to notice:
+            <ol>
+                <li>If the components are not connected as a single net:<br>
+                    $Disjoint\ cost = 2 \times (\#components - 1) \times (boundary\Delta X + boundary\Delta Y + \#ViaLayers \times C_v)$<br>
+                    ($boundary\Delta X = UR_x-LL_x\ of\ B, boundary\Delta Y = UR_y-LL_y\ of\ B,\ and\ \#ViaLayers=\#MetalLayers-1$)
+                </li>
+                <li>Invalid paths would be discarded as shown Figure 6.<br>
+                    <img  src="./image/f6.png" title="Figure6" width="540px" style="display:inline;">
+                    <p class="captionl" style="margin-left:270;"><font size="3">Figure6. Invalid paths</font></p>
+                    <ul>
+                        <li>E.g. $p$ fails to keep the minimum spacing with obstacles or boundaries.</li>
+                        <li>The spacing violation of a via checks both upper and lower layer obstacles.</li>
+                        <li>The non-horizontal H-line or non-vertical V-line will also be discarded.</li>
+                        <li>Be aware that this removal may cause the net being disjoint!</li>
+                        <li>If your path is overlapping with routed net shapes, <b>we will not trim it for you</b>.</li>
+                        <li>If your path is overlapping with themselves, <b>we will not trim it for you either</b>.<br>
+                            <img  src="./image/f7.png" title="Figure7" width="480px" style="display:inline;">
+                            <p class="captionl" style="margin-left:90px;"><font size="3">Figure7. Path overlapping net shapes</font></p>
+                        </li>
+                    </ul>
+                </li>
+                <li>Runtime bonus/penalty to overall cost<br>
+                    <img  src="./image/f8.png" title="Figure8" width="480px" style="display:inline;">
+                    <p class="captionl" style="margin-left:120px;"><font size="3">Figure8. Runtime bonus calculation</font></p>
+                    <ul>
+                        <li>We measure the runtime by the clock on the wall time.</li>
+                        <li>If your runtime is within (or equal to) the first quartile of all the runtime of the teams. Then there will be a bonus 10% off to your overall cost, as shown in Figure 8.</li>
+                        <li>If your runtime is within (or equal to) the second quartile of all the runtime of the teams. Then there will be a bonus 5% off to your overall cost.</li>
+                        <li>If your runtime is over 4hrs, then the output of that case will be discarded. The cost would be treated as though the net is disjoint (huge disjoint cost).</li>
+                    </ul>
+                </li>
+            </ol>
+        </li>
+    </ul>
+<hr>
+    
+<!--------------------------------------------------------------->    
+    
+<h2 class="auto-style5">IV. Example</h2>
+    <ul>
+        <li>Remember that Line Cost = length</li>
+        <li>Input format:<br><br>
+            ViaCost = Cv<br>
+            Spacing = S<br>
+            Boundary = (LLx,LLy) (URx,URy)<br>
+            #MetalLayers = W<br>
+            #RoutedShapes = X<br>
+            #RoutedVias = Y<br>
+            #Obstacles = Z<br>
+            RoutedShape Layer (LLx,LLy) (URx,URy)<br>
+            …<br>
+            RoutedVia Layer (x,y)<br>
+            …<br>
+            Obstacle Layer (LLx,LLy) (URx,URy)<br><br>
+        </li>
+        <li>You can output H-line/V-line/via in any order. But be careful about IO handling in multi-thread environment.</li>
+        <li>Output Format:<br>
+            H-line Layer (x1,y) (x2,y)<br>
+            …<br>
+            V-line Layer (x,y1) (x,y2)<br>
+            …<br>
+            Via Layer (x,y)<br><br>
+        </li>
+        <li>Take Figure 1 for example, the input will be:<br><br>
+            ViaCost = 20<br>
+            Spacing = 5<br>
+            Boundary = (0,0) (1000,1000)<br>
+            #MetalLayers = 2<br>
+            #RoutedShapes = 7<br>
+            #RoutedVias = 1<br>
+            #Obstacles = 3<br>
+            RoutedShape M1 (50,100) (250,150)<br>
+            RoutedShape M1 (600,20) (750,140)<br>
+            RoutedShape M1 (50,850) (250,900)<br>
+            RoutedShape M1 (10,800) (500,995)<br>
+            RoutedShape M2 (75,20) (200,750)<br>
+            RoutedShape M2 (375,100) (575,600)<br>
+            RoutedShape M2 (475,20) (670,450)<br>
+            RoutedVia V1 (175,125)<br>
+            Obstacle M1 (350,300) (650,750)<br>
+            Obstacle M1 (50,350) (650,650)<br>
+            Obstacle M2 (350,700) (950,800)<br><br>
+        </li>
+        <li>
+            Example output:<br><br>
+            V-line M1 (700,140) (700,550)<br>
+            H-line M2 (575,550) (700,550)<br>
+            H-line M1 (500,850) (700,850)<br>
+            Via V1 (700,550)<br>
+            V-line M1 (700,550) (700,850)<br>
+            H-line M2 (200,150) (375,150)<br><br>
+        </li>
+        <li>Your program should be named net_open_finder and we can execute as follows:<br>
+            ./net_open_finder &lt;input.txt&gt; &lt;output.txt&gt;
+        </li>
+    </ul>
+<hr>
+
+<!---------------------------------------------------------------->
+    
+    
+<h2 class="auto-style5">V. Test Cases and Evaluator</h2>
+    <ol>
+        <li><a href="TestCase/cases.tgz">TestCase</a><br>&nbsp;&nbsp;&nbsp;&nbsp;-	3 cases are in the tgz file.</li>
+        <li><a href="TestCase/Evaluator3.tgz">Evaluator</a><br>&nbsp;&nbsp;&nbsp;&nbsp;-	Contestants can use this evaluator to validate their output answer.<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;md5sum: <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;2db6d3247e209580803e4bc90ced5860  eval_3<br><br>
+ 
+            &nbsp;&nbsp;&nbsp;&nbsp;Usage of evaluator:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;" ./eval &lt;case&gt; &lt;ans&gt; " to evaluate and draw SVG.<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;or<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;" ./eval &lt;case&gt; " to draw SVG only.<br><br>
+ 
+            &nbsp;&nbsp;&nbsp;&nbsp;It will generate per metal layer SVG files (named Mx.svg) in the executing path to help you visualize the problem.<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;You can open it by web browser like Chrome and FireFox.<br><br>
+ 
+            &nbsp;&nbsp;&nbsp;&nbsp;For zoom-in zoom-out support, please install chrome extension<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<a href="https://chrome.google.com/webstore/detail/svg-navigator/pefngfjmidahdaahgehodmfodhhhofkl">https://chrome.google.com/webstore/detail/svg-navigator/pefngfjmidahdaahgehodmfodhhhofkl</a><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;And check 'Allow access to file URLs' in the chrome://extensions/<br>
+
+        </li>
+        <li>
+            <a href="TestCase/caseA.tgz">TestCaseA</a>
+        </li>
+        <li>
+            <a href="TestCase/hidden_cases.tgz">Hidden TestCases</a>
+        </li>
+    </ol>
+    
+<hr>
+    
+<!--------------------------------------------------------------->
+            
+<h2 class="auto-style5">VI. Alpha Test</h2>
+    <center><img src="image/alpha.JPG" width="1080px"></center>
+<hr>
+    
+<!--------------------------------------------------------------->
+            
+            
+<h2 class="auto-style5">VII. Beta Test</h2>
+    <center><img src="image/Problem_b_beta.jpg" width="1080px"></center>
+<hr>
+    
+<!--------------------------------------------------------------->
+            
+            
+<h2 class="auto-style5">VIII. Reference</h2>
+    <ul>
+        <li>Lin, Chung-Wei, et al. "Obstacle-avoiding rectilinear Steiner tree construction based on spanning graphs." IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems 27.4 (2008): 643-653.</li>
+        <li>Liu, Chih-Hung, et al. "Efficient Multilayer Obstacle-Avoiding Rectilinear Steiner Tree Construction Based on Geometric Reduction." IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems 33.12 (2014): 1928-1941.</li>
+    </ul>
+<hr>
+    
+<!--------------------------------------------------------------->            
+
+<h2 class="auto-style5">IX.  FAQ</h2>
+    <ol>
+       <li>What's the problem that I cannot execute the binary file in problem B when I use eval at my terminal?<br>
+           <img src="image/faq1.png" width="720px"><br>
+           <font color="red">The evaluator binary is a Linux binary. Please run it on Linux OS. Linux distribution tested are RHEL 6.6 and Ubuntu 14.04 LTS.</font>
+        </li>
+        <li>
+            In the given example, there are two routed shapes(on M2) overlapping. Should we consider they are both connected to the net if either of the shapes is connected to it?<br>
+            <font color="red">Yes, because if two routed shape are overlapping, these two shapes form a connected component.</font>
+        </li>
+        <li>
+            Is it possible in this problem that a routed shape overlap an obstacle or a via point is on an obstacle?<br>
+            <font color="red">No. We guaranteed “The given routed net shapes/via will always keep a minimum spacing S to obstacles and boundaries.” In the problem description. Thus the overlapping of routed shape/ via to obstacle would never exist in the testcase.</font>
+        </li>
+        <li>
+            Is there always one or more vias in any Via Layer?<br>
+            <font color="red">I think you mean routed via. No, not guaranteed. But the via layer is always available for your (answer)via.</font>
+        </li>
+        <li>
+            In public testcases, there are many overlapping Net shapes, and so are Obstacles. Is it general and legal?<br>
+            <img src="image/faq5.png" width="720px"><br>
+            <font color="red">Yes, It is general and legal (as long as there is no overlapping between net shapes and obstacles).</font>
+        </li>
+        <li>
+            Is the coordinate of all given shape, obstacle, via, generated line and via integer?<br>
+            <font color="red">Yes, as described in the detailed rule:  “A point in this problem is expressed as a pair of non-negative integers.”</font>
+        </li>
+        <li>
+            As a contestant, I am so glad to write to you for few questions about the problem we chose, Net Open Location Finder with Obstacles. I wonder if we are allowed to directly import some open source package (or head file) that are published online as a reference or we have to write the algorithm all by ourselves?<br>
+            <font color="red">Yes, you can use any open source package as long as being careful about any copylefts that package claims.</font>
+        </li>
+        <li>
+            ViaCost = Cv<br>
+            Spacing = S<br>
+            Boundary = (LLx,LLy) (URx,URy)<br>
+            #MetalLayers = W<br>
+            #RoutedShapes = X<br>
+            #RoutedVias = Y<br>
+            #Obstacles = Z<br>
+            RoutedShape Layer (LLx,LLy) (URx,URy)<br>
+            ...<br>
+            RoutedVia Layer (x,y)<br>
+            ...<br>
+            Obstacle Layer (LLx,LLy) (URx,URy)<br>
+            What's the range(maximum and minimum value) of Cv, S,  W, X, Y,Z and Boundary in the Input format?<br>
+            <font color="Red">For your question about Cv, S,  W, X, Y, Z and Boundary in the Input format:<br>
+                All their minimum value are clearly 0.<br>
+                For the maximum value:<br>
+                We guarantee #MetalLayer W to be less than or equal to 10.<br>
+                ViaCost Cv, Spacing S, #RoutedVias Y to be less than or equal to 100.<br>
+                #RoutedShapes X, #Obstacles Z to be less than 1 million (10^6).<br>
+                And we guarantee that maximum value of Boundaries  &lt; UINT32_MAX.
+                </font>
+        </li>
+        <li>
+            In problem B, we used the evaluator to check our result, but we found that if we insert via at the position (x between obstacle's x1 and obstacle's x2 , obstacle's y2 + Spacing), for example, in case2, we insert Via V1 (10149,10083), evaluator will show that we insert invalid via. We think the lines have no width in this problem, via aligns the obstacle's boundary + Spacing should be valid.<br>
+            <font color="red">You are right! This via is valid. This is a minor defect in our evaluator code. We have updated the Evaluator on our website.</font>
+        </li>
+        <li>
+            How many cores can we use for multi-threading in the problem? Are the maximum number of cores equal to the number of cores in CIC machine?<br>
+            <font color="red">The maximum number of cores that you can use is 4. It is equal to the number of cores in CIC machine.</font>
+        </li>
+        <li>
+            Is it possible that the distance between Routed shape and Obstacles equals to Spacing S? or it must be longer than Spacing S?<br>
+            <font color="Red">It is possible that the distance between Routed shape and Obstacles equals to Spacing S. Equal to Spacing S is good enough.</font>
+        </li>
+        <li>
+            I do not know #Comps，what is that?<br>
+            <font color="red">It’s “Number of components after inserting answer paths”. If #Comps=1, it means your answer paths connect this net completely.</font>
+        </li>
+        <li>
+            Are these six cases the final one or not?<br>
+            <font color="red">No. Plan to add additional 2 large scale cases in beta test. One is public, one is hidden.</font>
+        </li>
+        <li>
+            We found that the evaluation metric of problem B in alpha test is the sum of the cost of each case, which means the results of large-scaled cases would dominate the final score. Is this the original intention of the evaluation metric? If not, we wonder if it is possible to change the evaluation metric (for example, normalize the cost of each case, etc.) in beta and final test or not.<br>
+            <font color="red">Yes it is our intention to have this kind of metric. In the real world EDA problems, almost all the cases are very large-scaled. So we don’t consider the small-scaled cases would be as important as the large-scaled one. And the different normalize method may partialize some cases or some team. Thus we add another two new large-scaled cases, caseA (public) and caseB (hidden). And hope you can focus on large-scaled cases.</font>
+        </li>
+        <li>
+            Is TeseCase1/2/3 the testcase of AlphaTest case1/2/3? Is TaseCaseA the public case mentioned in answer to Q13?<br>
+            <font color="red">1) Yes. 2) Yes.</font>
+        </li>
+        <li>
+            We find some RoutedShapes have zero area in case1. Like this:
+            RoutedShape M3 (4380,243) (4543,243)
+            Is it legal?
+            Another question:
+            Is a Obstacle has zero area legal?
+            If it is legal and Spacing = 0, can a line cross the Obstacle?<br>
+            <img src="image/faq16.png" width="720px"><br>
+            <font color="red">Zero area obstacle is legal. A line should still keep min spacing to obstacle. A line cross obstacle is invalid.</font>
+
+        </li>
+        <li>
+            (1)Are there any via given in case connecting no RoutedShape? (2)If answer is yes, should we need to connect these vias to other RoutedShape?<br>
+            <font color="red">(1)Yes. (2)Yes.</font>
+        </li>
+        
+    </ol>
