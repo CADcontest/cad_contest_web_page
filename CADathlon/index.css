@@ -1100,6 +1100,7 @@ ol {
   line-height: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
+  font-weight: bold;
 }
 .u-text:not(ul):not(ol):not(p):not(.u-post-content):not(.u-block-content):not(.u-product-desc):not(.u-cart-block-content):not(.u-checkout-block-content) a {
   color: inherit;
@@ -18061,7 +18062,7 @@ html {
 }
 .u-body {
   font-size: 1rem;
-  line-height: 1.6;
+  /*line-height: 1.6;*/
 }
 .u-body h1,
 .u-body h2,
@@ -24267,6 +24268,11 @@ span.product-remove:after {
   margin-right: 3px;
   margin-left: 3px;
   text-indent: -999px;
+}
+li {
+  margin: 10 0;
+  list-style: square;
+  text-align: justify;
 }
 .u-carousel-indicators li::before {
   position: absolute;
@@ -43336,7 +43342,7 @@ a.u-link.u-text-hover-grey-90:hover {
         font-size: 1.125rem;
         margin-top: 20px;
         margin-bottom: 20px;
-        line-height: 1.6;
+        /*line-height: 1.6;*/
         }
         a
         {
@@ -43369,7 +43375,7 @@ a.u-link.u-text-hover-grey-90:hover {
         font-size: 1.125rem;
         margin-top: 20px;
         margin-bottom: 20px;
-        line-height: 1.6;
+        line-height: 1.7;
         }
         ol
         {
