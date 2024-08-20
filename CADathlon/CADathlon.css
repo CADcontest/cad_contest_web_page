@@ -528,7 +528,7 @@
     }
   }
 .u-section-9 .u-sheet-1 {
-  min-height: 400px;
+  min-height: 140px;
 }
 
 .u-section-9 .u-text-1 {
@@ -541,7 +541,7 @@
   margin: 10px auto 0 0;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 575px) {
   .u-section-9 .u-line-1 {
     width: 720px;
   }
@@ -558,7 +558,11 @@
     width: 340px;
   }
 }
-
+.u-section-9 .u-btn-1 {
+  background-image: none;
+  padding: 2;
+  text-decoration: underline;
+}
 .edit_box.ntb {
   border-top: 0;
 }
