@@ -24272,7 +24272,7 @@ span.product-remove:after {
 li {
   margin: 10 0;
   list-style: square;
-  text-align: justify;
+  /*text-align: justify;*/
 }
 .u-carousel-indicators li::before {
   position: absolute;
