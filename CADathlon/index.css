@@ -18058,7 +18058,7 @@ div.u-video,
   transform: scaleX(-1) scaleY(-1);
 }
 html {
-  font-size: 16px;
+ font-size: 16px !important; 
 }
 .u-body {
   font-size: 1rem;
