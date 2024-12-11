@@ -43457,7 +43457,7 @@ a.u-link.u-text-hover-grey-90:hover {
         @media (max-width: 575px) {
         h2:not(.u-subtitle)
         {
-        font-size: 1.875rem;
+        font-size: 1.875rem !important; 
         }
         }
         @media (max-width: 767px) {
